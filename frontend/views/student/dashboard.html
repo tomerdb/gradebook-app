@@ -37,7 +37,7 @@
         <div class="col-md-8">
             <div class="dashboard-card">
                 <h4><i class="fas fa-graduation-cap"></i> Course Grades</h4>
-                
+
                 <div ng-if="loading" class="text-center py-4">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -62,23 +62,27 @@
                                     <p class="card-text">
                                         <small class="text-muted">
                                             <i class="fas fa-user"></i> {{course.teacher_name}}<br>
-                                            <i class="fas fa-clipboard-list"></i> {{course.total_evaluations || 0}} evaluations
+                                            <i class="fas fa-clipboard-list"></i> {{course.total_evaluations || 0}}
+                                            evaluations
                                         </small>
                                     </p>
-                                    
+
                                     <!-- Grade breakdown -->
                                     <div class="grade-breakdown mt-2">
                                         <div ng-if="course.participation_weight > 0" class="grade-item">
-                                            <small>Participation ({{course.participation_weight}}%): {{course.avg_participation || 0}}</small>
+                                            <small>Participation ({{course.participation_weight}}%):
+                                                {{course.avg_participation || 0}}</small>
                                         </div>
                                         <div ng-if="course.homework_weight > 0" class="grade-item">
-                                            <small>Homework ({{course.homework_weight}}%): {{course.avg_homework || 0}}</small>
+                                            <small>Homework ({{course.homework_weight}}%):
+                                                {{course.avg_homework || 0}}</small>
                                         </div>
                                         <div ng-if="course.exam_weight > 0" class="grade-item">
                                             <small>Exams ({{course.exam_weight}}%): {{course.avg_exam || 0}}</small>
                                         </div>
                                         <div ng-if="course.project_weight > 0" class="grade-item">
-                                            <small>Projects ({{course.project_weight}}%): {{course.avg_project || 0}}</small>
+                                            <small>Projects ({{course.project_weight}}%):
+                                                {{course.avg_project || 0}}</small>
                                         </div>
                                         <div ng-if="course.quiz_weight > 0" class="grade-item">
                                             <small>Quizzes ({{course.quiz_weight}}%): {{course.avg_quiz || 0}}</small>
@@ -96,7 +100,7 @@
         <div class="col-md-4">
             <div class="dashboard-card mb-3">
                 <h4><i class="fas fa-chart-pie"></i> Performance Overview</h4>
-                
+
                 <div ng-if="!loading">
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -111,10 +115,10 @@
                                 'bg-info': stats.overallGPA >= 80 && stats.overallGPA < 90,
                                 'bg-warning': stats.overallGPA >= 70 && stats.overallGPA < 80,
                                 'bg-danger': stats.overallGPA < 70
-                            }" role="progressbar" style="width: {{stats.overallGPA}}%"></div>
+                            }" role="progressbar" ng-style="{'width': stats.overallGPA + '%'}"></div>
                         </div>
                     </div>
-                    
+
                     <div class="alert alert-info alert-custom">
                         <i class="fas fa-lightbulb"></i> {{getPerformanceMessage()}}
                     </div>
@@ -138,7 +142,7 @@
     <!-- Recent Evaluations -->
     <div class="dashboard-card">
         <h4><i class="fas fa-clock"></i> Recent Evaluations</h4>
-        
+
         <div ng-if="!loading && recentEvaluations.length === 0" class="text-center py-4">
             <p class="text-muted">No evaluations yet</p>
         </div>
