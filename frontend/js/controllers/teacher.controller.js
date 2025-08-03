@@ -315,19 +315,50 @@ angular.module('gradeBookApp')
             document.body.removeChild(link);
         };
 
-        $scope.downloadStudentGradeSheet = function (studentId) {
-            var url = ApiService.downloadPDFReport({
-                type: 'student',
-                studentId: studentId
-            });
-            window.open(url, '_blank');
-        };
-
         $scope.getScoreClass = function (score) {
             if (score >= 90) return 'score-excellent';
             if (score >= 80) return 'score-good';
             if (score >= 70) return 'score-average';
             return 'score-poor';
+        };
+
+        // Edit evaluation functionality
+        $scope.editingEvaluation = {};
+
+        $scope.editEvaluation = function(evaluation) {
+            // Create a copy of the evaluation for editing
+            $scope.editingEvaluation = angular.copy(evaluation);
+            // Show the modal
+            var modal = new bootstrap.Modal(document.getElementById('editEvaluationModal'));
+            modal.show();
+        };
+
+        $scope.updateEvaluation = function() {
+            if (!$scope.editingEvaluation.id) {
+                console.error('No evaluation ID found');
+                return;
+            }
+
+            var updateData = {
+                subject: $scope.editingEvaluation.subject,
+                evaluation_type: $scope.editingEvaluation.evaluation_type,
+                score: $scope.editingEvaluation.score,
+                feedback: $scope.editingEvaluation.feedback
+            };
+
+            ApiService.updateEvaluation($scope.editingEvaluation.id, updateData)
+                .then(function(response) {
+                    console.log('Evaluation updated successfully');
+                    // Hide the modal
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('editEvaluationModal'));
+                    modal.hide();
+                    // Reload evaluations to show updated data
+                    loadEvaluations();
+                })
+                .catch(function(error) {
+                    console.error('Error updating evaluation:', error);
+                    alert('Error updating evaluation. Please try again.');
+                });
         };
 
         loadEvaluations();

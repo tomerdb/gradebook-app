@@ -73,7 +73,7 @@
                             <th>Score</th>
                             <th>Feedback</th>
                             <th>Date</th>
-                            <th>GradeSheet</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -98,9 +98,9 @@
                             </td>
                             <td>{{evaluation.date_created | date:'short'}}</td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary"
-                                    ng-click="downloadStudentGradeSheet(evaluation.student_id)">
-                                    <i class="fas fa-download"></i> Download GradeSheet
+                                <button class="btn btn-sm btn-outline-primary" 
+                                    ng-click="editEvaluation(evaluation)">
+                                    <i class="fas fa-edit"></i> Edit
                                 </button>
                             </td>
                         </tr>
@@ -145,6 +145,58 @@
                     <button type="button" class="btn btn-primary" ng-click="executeDownload()"
                         ng-disabled="!downloadOption">
                         <i class="fas fa-download"></i> Download {{downloadType.toUpperCase()}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Evaluation Modal -->
+    <div class="modal fade" id="editEvaluationModal" tabindex="-1" aria-labelledby="editEvaluationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editEvaluationModalLabel">Edit Evaluation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form ng-submit="updateEvaluation()">
+                        <div class="mb-3">
+                            <label for="editStudent" class="form-label">Student</label>
+                            <input type="text" class="form-control" id="editStudent" 
+                                ng-model="editingEvaluation.student_name" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSubject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="editSubject" 
+                                ng-model="editingEvaluation.subject" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editType" class="form-label">Evaluation Type</label>
+                            <select class="form-control" id="editType" ng-model="editingEvaluation.evaluation_type" required>
+                                <option value="exam">Exam</option>
+                                <option value="homework">Homework</option>
+                                <option value="participation">Participation</option>
+                                <option value="project">Project</option>
+                                <option value="quiz">Quiz</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editScore" class="form-label">Score (0-100)</label>
+                            <input type="number" class="form-control" id="editScore" 
+                                ng-model="editingEvaluation.score" min="0" max="100" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFeedback" class="form-label">Feedback</label>
+                            <textarea class="form-control" id="editFeedback" 
+                                ng-model="editingEvaluation.feedback" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" ng-click="updateEvaluation()">
+                        <i class="fas fa-save"></i> Update Evaluation
                     </button>
                 </div>
             </div>
