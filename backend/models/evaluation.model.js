@@ -118,6 +118,7 @@ const Evaluation = {
         c.name as course_name,
         c.description as course_description,
         t.name as teacher_name,
+        s.name as student_name,
         cgr.participation_weight,
         cgr.homework_weight,
         cgr.exam_weight,
@@ -132,10 +133,11 @@ const Evaluation = {
       FROM course_enrollments ce
       JOIN courses c ON ce.course_id = c.id
       JOIN users t ON c.teacher_id = t.id
+      JOIN users s ON ce.student_id = s.id
       LEFT JOIN course_grading_rules cgr ON c.id = cgr.course_id
       LEFT JOIN evaluations e ON c.id = e.course_id AND e.student_id = ce.student_id
       WHERE ce.student_id = ?
-      GROUP BY c.id, c.name, c.description, t.name, cgr.participation_weight, cgr.homework_weight, cgr.exam_weight, cgr.project_weight, cgr.quiz_weight
+      GROUP BY c.id, c.name, c.description, t.name, s.name, cgr.participation_weight, cgr.homework_weight, cgr.exam_weight, cgr.project_weight, cgr.quiz_weight
       ORDER BY c.name
     `, [studentId], callback);
   },

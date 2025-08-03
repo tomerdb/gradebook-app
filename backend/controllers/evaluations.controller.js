@@ -231,48 +231,188 @@ const EvaluationsController = {
   generatePDFReport: (req, res) => {
     const { studentId, teacherId, type } = req.query;
 
-    let query;
     if (type === 'student' && studentId) {
-      query = () => Evaluation.getByStudentId(studentId, generatePDF);
-    } else if (type === 'teacher' && teacherId) {
-      query = () => Evaluation.getByTeacherId(teacherId, generatePDF);
-    } else {
-      query = () => Evaluation.getAll(generatePDF);
-    }
+      // For student reports, generate a course-based gradesheet
+      Evaluation.getCourseGrades(studentId, (err, grades) => {
+        if (err) {
+          return res.status(500).json({ error: 'Database error' });
+        }
 
-    function generatePDF(err, evaluations) {
-      if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        // Calculate final grades for each course (same logic as getCourseGrades)
+        const coursesWithGrades = grades.map(course => {
+          const weights = {
+            participation: course.participation_weight || 0,
+            homework: course.homework_weight || 0,
+            exam: course.exam_weight || 0,
+            project: course.project_weight || 0,
+            quiz: course.quiz_weight || 0
+          };
+
+          const scores = {
+            participation: course.avg_participation || 0,
+            homework: course.avg_homework || 0,
+            exam: course.avg_exam || 0,
+            project: course.avg_project || 0,
+            quiz: course.avg_quiz || 0
+          };
+
+          let finalGrade = 0;
+          let totalWeight = 0;
+
+          Object.keys(weights).forEach(type => {
+            if (weights[type] > 0 && scores[type] !== null) {
+              finalGrade += (weights[type] / 100) * scores[type];
+              totalWeight += weights[type];
+            }
+          });
+
+          // Normalize if total weight is not 100%
+          if (totalWeight > 0 && totalWeight !== 100) {
+            finalGrade = (finalGrade / totalWeight) * 100;
+          }
+
+          return {
+            ...course,
+            final_grade: Math.round(finalGrade * 100) / 100
+          };
+        });
+
+        // Generate student gradesheet PDF
+        generateStudentGradesheetPDF(res, coursesWithGrades, studentId);
+      });
+    } else {
+      // For other reports, use the original logic
+      let query;
+      if (type === 'teacher' && teacherId) {
+        query = () => Evaluation.getByTeacherId(teacherId, generatePDF);
+      } else {
+        query = () => Evaluation.getAll(generatePDF);
       }
 
-      const doc = new PDFDocument();
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="evaluation-report.pdf"');
+      function generatePDF(err, evaluations) {
+        if (err) {
+          return res.status(500).json({ error: 'Database error' });
+        }
 
-      doc.pipe(res);
+        const doc = new PDFDocument();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="evaluation-report.pdf"');
 
-      // Title
-      doc.fontSize(20).text('Evaluation Report', 100, 100);
-      doc.moveDown();
+        doc.pipe(res);
 
-      // Report data
-      evaluations.forEach((evaluation, index) => {
-        doc.fontSize(12)
-           .text(`${index + 1}. ${evaluation.student_name || 'Student'} - ${evaluation.subject}`)
-           .text(`   Teacher: ${evaluation.teacher_name || 'Teacher'}`)
-           .text(`   Course: ${evaluation.course_name || 'Course'}`)
-           .text(`   Type: ${evaluation.evaluation_type}`)
-           .text(`   Score: ${evaluation.score}/100`)
-           .text(`   Feedback: ${evaluation.feedback || 'No feedback'}`)
-           .text(`   Date: ${evaluation.date_created}`)
-           .moveDown();
-      });
+        // Title
+        doc.fontSize(20).text('Evaluation Report', 100, 100);
+        doc.moveDown();
 
-      doc.end();
+        // Report data
+        evaluations.forEach((evaluation, index) => {
+          doc.fontSize(12)
+             .text(`${index + 1}. ${evaluation.student_name || 'Student'} - ${evaluation.subject}`)
+             .text(`   Teacher: ${evaluation.teacher_name || 'Teacher'}`)
+             .text(`   Course: ${evaluation.course_name || 'Course'}`)
+             .text(`   Type: ${evaluation.evaluation_type}`)
+             .text(`   Score: ${evaluation.score}/100`)
+             .text(`   Feedback: ${evaluation.feedback || 'No feedback'}`)
+             .text(`   Date: ${evaluation.date_created}`)
+             .moveDown();
+        });
+
+        doc.end();
+      }
+
+      query();
     }
-
-    query();
   }
 };
+
+// Helper function to generate student gradesheet PDF
+function generateStudentGradesheetPDF(res, courses, studentId) {
+  const doc = new PDFDocument({ margin: 50 });
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'attachment; filename="student-gradesheet.pdf"');
+
+  doc.pipe(res);
+
+  // Title
+  doc.fontSize(20).text('Student Gradesheet', { align: 'center' });
+  doc.moveDown();
+
+  // Get student name from first course (if available)
+  const studentName = courses.length > 0 ? courses[0].student_name : 'Student';
+  doc.fontSize(14).text(`Student: ${studentName}`, { align: 'left' });
+  doc.fontSize(12).text(`Date: ${new Date().toLocaleDateString()}`, { align: 'left' });
+  doc.moveDown();
+
+  if (courses.length === 0) {
+    doc.text('No courses enrolled.', { align: 'center' });
+    doc.end();
+    return;
+  }
+
+  // Table headers
+  const tableTop = doc.y;
+  const courseCol = 50;
+  const teacherCol = 250;
+  const gradeCol = 450;
+  const maxCol = 520;
+
+  // Draw table header
+  doc.fontSize(12).font('Helvetica-Bold');
+  doc.text('Course', courseCol, tableTop);
+  doc.text('Teacher', teacherCol, tableTop);
+  doc.text('Grade', gradeCol, tableTop);
+
+  // Draw header underline
+  doc.moveTo(courseCol, tableTop + 15)
+     .lineTo(maxCol, tableTop + 15)
+     .stroke();
+
+  let currentY = tableTop + 25;
+
+  // Table rows
+  doc.font('Helvetica');
+  let totalGrade = 0;
+  courses.forEach((course, index) => {
+    doc.text(course.course_name || 'Unknown Course', courseCol, currentY, { width: 190 });
+    doc.text(course.teacher_name || 'Unknown Teacher', teacherCol, currentY, { width: 190 });
+    doc.text(course.final_grade ? `${course.final_grade.toFixed(1)}%` : 'N/A', gradeCol, currentY);
+    
+    totalGrade += course.final_grade || 0;
+    currentY += 20;
+
+    // Add a light line between rows
+    if (index < courses.length - 1) {
+      doc.strokeColor('#E0E0E0')
+         .moveTo(courseCol, currentY - 5)
+         .lineTo(maxCol, currentY - 5)
+         .stroke()
+         .strokeColor('#000000');
+    }
+  });
+
+  // Add some space before GPA
+  currentY += 10;
+
+  // Draw bottom line
+  doc.moveTo(courseCol, currentY)
+     .lineTo(maxCol, currentY)
+     .stroke();
+
+  currentY += 15;
+
+  // Calculate and display GPA
+  const gpa = courses.length > 0 ? (totalGrade / courses.length) : 0;
+  doc.fontSize(14).font('Helvetica-Bold');
+  doc.text(`Overall GPA: ${gpa.toFixed(2)}%`, courseCol, currentY);
+
+  // Add grading scale
+  currentY += 30;
+  doc.fontSize(10).font('Helvetica');
+  doc.text('Grading Scale:', courseCol, currentY);
+  currentY += 15;
+  doc.text('90-100%: Excellent    80-89%: Good    70-79%: Average    Below 70%: Needs Improvement', courseCol, currentY);
+
+  doc.end();
+}
 
 module.exports = EvaluationsController;

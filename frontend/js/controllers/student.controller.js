@@ -68,6 +68,19 @@ angular.module('gradeBookApp')
         return 'Below average performance. Consider seeking additional help.';
     };
 
+    $scope.downloadPDFReport = function() {
+        var user = AuthService.getCurrentUser();
+        var url = ApiService.downloadPDFReport({ type: 'student', studentId: user.id });
+        window.open(url, '_blank');
+    };
+
+    $scope.getScoreClass = function(score) {
+        if (score >= 90) return 'score-excellent';
+        if (score >= 80) return 'score-good';
+        if (score >= 70) return 'score-average';
+        return 'score-poor';
+    };
+
     loadDashboard();
 })
 
