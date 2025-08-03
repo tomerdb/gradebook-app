@@ -1,11 +1,22 @@
 angular.module('gradeBookApp')
 
     // Teacher Dashboard Controller
-    .controller('TeacherDashboardController', function ($scope, ApiService, AuthService) {
+    .controller('TeacherDashboardController', function ($scope, $location, ApiService, AuthService) {
         $scope.evaluations = [];
         $scope.students = [];
         $scope.recentEvaluations = [];
         $scope.loading = true;
+
+        // Navigation functions for quick actions
+        $scope.navigateToEvaluate = function() {
+            console.log('Navigating to evaluate page');
+            $location.path('/teacher/evaluate');
+        };
+
+        $scope.navigateToReports = function() {
+            console.log('Navigating to reports page');
+            $location.path('/teacher/reports');
+        };
 
         function loadDashboard() {
             // Load teacher's evaluations

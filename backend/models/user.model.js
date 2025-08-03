@@ -46,11 +46,14 @@ const User = {
   // Get students by teacher
   getStudentsByTeacher: (teacherId, callback) => {
     db.all(`
-      SELECT DISTINCT u.id, u.name, u.email, c.name as class_name, c.id as class_id
+      SELECT DISTINCT u.id, u.name, u.email, 
+        GROUP_CONCAT(c.name, ', ') as course_names,
+        COUNT(c.id) as course_count
       FROM users u
-      JOIN student_classes sc ON u.id = sc.student_id
-      JOIN classes c ON sc.class_id = c.id
+      JOIN course_enrollments ce ON u.id = ce.student_id
+      JOIN courses c ON ce.course_id = c.id
       WHERE c.teacher_id = ? AND u.role = 'student'
+      GROUP BY u.id, u.name, u.email
     `, [teacherId], callback);
   },
 

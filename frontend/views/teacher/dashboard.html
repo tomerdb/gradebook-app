@@ -25,12 +25,12 @@
             <div class="dashboard-card">
                 <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
                 <div class="d-grid gap-2">
-                    <a href="#/teacher/evaluate" class="btn btn-primary">
+                    <button type="button" ng-click="navigateToEvaluate()" class="btn btn-primary">
                         <i class="fas fa-edit"></i> Evaluate Students
-                    </a>
-                    <a href="#/teacher/reports" class="btn btn-outline-primary">
+                    </button>
+                    <button type="button" ng-click="navigateToReports()" class="btn btn-outline-primary">
                         <i class="fas fa-file-alt"></i> View Reports
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
@@ -55,7 +55,9 @@
                         <div class="list-group-item" ng-repeat="student in students | limitTo:5">
                             <div class="d-flex w-100 justify-content-between">
                                 <h6 class="mb-1">{{student.name}}</h6>
-                                <small>{{student.class_name}}</small>
+                                <small ng-if="student.course_count == 1">{{student.course_names}}</small>
+                                <small ng-if="student.course_count > 1">{{student.course_count}} courses</small>
+                                <small ng-if="!student.course_names">No courses</small>
                             </div>
                             <small class="text-muted">{{student.email}}</small>
                         </div>
