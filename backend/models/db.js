@@ -51,11 +51,8 @@ db.serialize(() => {
     UNIQUE(student_id, course_id)
   )`);
 
-  // Migration: Drop old evaluations table and create new one
-  db.run(`DROP TABLE IF EXISTS evaluations`);
-  
   // Evaluations table (updated to use courses)
-  db.run(`CREATE TABLE evaluations (
+  db.run(`CREATE TABLE IF NOT EXISTS evaluations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_id INTEGER NOT NULL,
     teacher_id INTEGER NOT NULL,
@@ -85,12 +82,25 @@ db.serialize(() => {
   db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
           VALUES ('Jane Student', 'student@gradebook.com', ?, 'student')`, [studentPassword]);
 
+  // Insert another sample student (yuval)
+  const yuvalPassword = bcrypt.hashSync('yuval123', 10);
+  db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
+          VALUES ('yuval', 'yuval@gradebook.com', ?, 'student')`, [yuvalPassword]);
+
+  // Insert another teacher (tomer)
+  const tomerPassword = bcrypt.hashSync('tomer123', 10);
+  db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
+          VALUES ('tomer', 'tomer@gradebook.com', ?, 'teacher')`, [tomerPassword]);
+
   // Insert sample courses
   db.run(`INSERT OR IGNORE INTO courses (id, name, description, teacher_id) 
           VALUES (1, 'Mathematics', 'Basic Mathematics Course', 2)`);
   
   db.run(`INSERT OR IGNORE INTO courses (id, name, description, teacher_id) 
           VALUES (2, 'Science', 'General Science Course', 2)`);
+
+  db.run(`INSERT OR IGNORE INTO courses (id, name, description, teacher_id) 
+          VALUES (3, 'AnimeDiscussion', 'Anime Discussion Course', 5)`);
 
   // Insert default grading rules for courses
   db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight) 
@@ -99,12 +109,34 @@ db.serialize(() => {
   db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight) 
           VALUES (2, 15, 35, 50)`);
 
-  // Insert sample enrollments (enroll student ID 3 in both courses)
+  db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight) 
+          VALUES (3, 20, 40, 40)`);
+
+  // Insert sample enrollments (enroll student ID 3 in both courses, and yuval ID 4 in all courses)
   db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
           VALUES (3, 1)`);
   
   db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
           VALUES (3, 2)`);
+
+  db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
+          VALUES (4, 1)`);
+  
+  db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
+          VALUES (4, 2)`);
+
+  db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
+          VALUES (4, 3)`);
+
+  // Insert sample evaluations
+  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, subject, evaluation_type, score, feedback, date_created) 
+          VALUES (1, 4, 2, 1, 'Final exam', 'exam', 90, 'Excellent work!', '2025-08-03 13:45:00')`);
+
+  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, subject, evaluation_type, score, feedback, date_created) 
+          VALUES (2, 4, 5, 3, 'exss', 'homework', 77, 'No feedback', '2025-08-03 14:46:57')`);
+
+  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, subject, evaluation_type, score, feedback, date_created) 
+          VALUES (3, 4, 2, 1, 'ss', 'participation', 70, '', '2025-08-03 13:44:42')`);
 });
 
 module.exports = db;

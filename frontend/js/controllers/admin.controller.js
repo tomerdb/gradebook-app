@@ -378,6 +378,11 @@ angular.module('gradeBookApp')
         window.open(url, '_blank');
     };
 
+    $scope.downloadStudentGradeSheet = function(studentId) {
+        var url = ApiService.downloadPDFReport({ type: 'student', studentId: studentId });
+        window.open(url, '_blank');
+    };
+
     $scope.getScoreClass = function(score) {
         if (score >= 90) return 'score-excellent';
         if (score >= 80) return 'score-good';

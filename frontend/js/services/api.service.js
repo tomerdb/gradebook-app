@@ -256,7 +256,7 @@ angular.module('gradeBookApp')
         }));
     };
 
-    // Report endpoints - PDF only (CSV removed)
+    // Report endpoints - PDF and CSV
     service.downloadPDFReport = function(params) {
         var token = AuthService.getToken();
         var queryString = Object.keys(params || {}).map(function(key) {
@@ -264,6 +264,20 @@ angular.module('gradeBookApp')
         }).join('&');
 
         var url = API_BASE + '/evaluations/reports/pdf';
+        if (queryString) {
+            url += '?' + queryString;
+        }
+
+        return url + (url.indexOf('?') > -1 ? '&' : '?') + 'token=' + encodeURIComponent(token);
+    };
+
+    service.downloadCSVReport = function(params) {
+        var token = AuthService.getToken();
+        var queryString = Object.keys(params || {}).map(function(key) {
+            return key + '=' + encodeURIComponent(params[key]);
+        }).join('&');
+
+        var url = API_BASE + '/evaluations/reports/csv';
         if (queryString) {
             url += '?' + queryString;
         }

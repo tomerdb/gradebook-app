@@ -17,8 +17,9 @@ router.get('/final-grade/:studentId/:courseId', verifyToken, EvaluationsControll
 router.get('/', adminOnly, EvaluationsController.getAll);
 router.get('/stats', adminOnly, EvaluationsController.getStats);
 
-// Report routes (accessible by relevant roles) - PDF only, no CSV
+// Report routes (accessible by relevant roles)
 router.get('/reports/pdf', verifyToken, EvaluationsController.generatePDFReport);
+router.get('/reports/csv', verifyToken, EvaluationsController.generateCSVReport);
 
 // Get specific evaluation
 router.get('/:id', verifyToken, EvaluationsController.getById);

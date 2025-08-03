@@ -73,6 +73,7 @@
                             <th>Score</th>
                             <th>Feedback</th>
                             <th>Date</th>
+                            <th>GradeSheet</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -95,6 +96,11 @@
                                 <span ng-if="!evaluation.feedback" class="text-muted">No feedback</span>
                             </td>
                             <td>{{evaluation.date_created | date:'short'}}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" ng-click="downloadStudentGradeSheet(evaluation.student_id)">
+                                    <i class="fas fa-download"></i> Download GradeSheet
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

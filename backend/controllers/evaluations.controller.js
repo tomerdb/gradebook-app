@@ -294,27 +294,78 @@ const EvaluationsController = {
           return res.status(500).json({ error: 'Database error' });
         }
 
-        const doc = new PDFDocument();
+        const doc = new PDFDocument({ margin: 50 });
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename="evaluation-report.pdf"');
 
         doc.pipe(res);
 
         // Title
-        doc.fontSize(20).text('Evaluation Report', 100, 100);
+        doc.fontSize(20).text('Evaluation Report', { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(12).text(`Date: ${new Date().toLocaleDateString()}`, { align: 'left' });
         doc.moveDown();
 
-        // Report data
+        if (evaluations.length === 0) {
+          doc.text('No evaluations found.', { align: 'center' });
+          doc.end();
+          return;
+        }
+
+        // Table headers
+        const tableTop = doc.y;
+        const studentCol = 50;
+        const teacherCol = 120;
+        const courseCol = 190;
+        const subjectCol = 260;
+        const typeCol = 330;
+        const scoreCol = 400;
+        const dateCol = 460;
+        const maxCol = 520;
+
+        // Draw table header
+        doc.fontSize(10).font('Helvetica-Bold');
+        doc.text('Student', studentCol, tableTop);
+        doc.text('Teacher', teacherCol, tableTop);
+        doc.text('Course', courseCol, tableTop);
+        doc.text('Subject', subjectCol, tableTop);
+        doc.text('Type', typeCol, tableTop);
+        doc.text('Score', scoreCol, tableTop);
+        doc.text('Date', dateCol, tableTop);
+
+        // Draw header underline
+        doc.moveTo(studentCol, tableTop + 12)
+           .lineTo(maxCol, tableTop + 12)
+           .stroke();
+
+        let currentY = tableTop + 20;
+
+        // Table rows
+        doc.font('Helvetica').fontSize(8);
         evaluations.forEach((evaluation, index) => {
-          doc.fontSize(12)
-             .text(`${index + 1}. ${evaluation.student_name || 'Student'} - ${evaluation.subject}`)
-             .text(`   Teacher: ${evaluation.teacher_name || 'Teacher'}`)
-             .text(`   Course: ${evaluation.course_name || 'Course'}`)
-             .text(`   Type: ${evaluation.evaluation_type}`)
-             .text(`   Score: ${evaluation.score}/100`)
-             .text(`   Feedback: ${evaluation.feedback || 'No feedback'}`)
-             .text(`   Date: ${evaluation.date_created}`)
-             .moveDown();
+          if (currentY > 700) { // New page if needed
+            doc.addPage();
+            currentY = 50;
+          }
+
+          doc.text((evaluation.student_name || 'Student').substring(0, 12), studentCol, currentY, { width: 65 });
+          doc.text((evaluation.teacher_name || 'Teacher').substring(0, 12), teacherCol, currentY, { width: 65 });
+          doc.text((evaluation.course_name || 'Course').substring(0, 12), courseCol, currentY, { width: 65 });
+          doc.text((evaluation.subject || '').substring(0, 12), subjectCol, currentY, { width: 65 });
+          doc.text((evaluation.evaluation_type || '').substring(0, 8), typeCol, currentY, { width: 65 });
+          doc.text(`${evaluation.score}/100`, scoreCol, currentY, { width: 55 });
+          doc.text(new Date(evaluation.date_created).toLocaleDateString(), dateCol, currentY, { width: 55 });
+          
+          currentY += 15;
+
+          // Add a light line between rows
+          if (index < evaluations.length - 1) {
+            doc.strokeColor('#E0E0E0')
+               .moveTo(studentCol, currentY - 5)
+               .lineTo(maxCol, currentY - 5)
+               .stroke()
+               .strokeColor('#000000');
+          }
         });
 
         doc.end();
@@ -322,6 +373,110 @@ const EvaluationsController = {
 
       query();
     }
+  },
+
+  // Generate CSV report
+  generateCSVReport: (req, res) => {
+    const { type, teacherId, studentId } = req.query;
+
+    function query() {
+      let sql;
+      let params = [];
+
+      if (type === 'student') {
+        sql = `
+          SELECT 
+            e.id,
+            u_student.name as student_name,
+            u_teacher.name as teacher_name,
+            c.name as course_name,
+            e.subject,
+            e.evaluation_type,
+            e.score,
+            e.feedback,
+            e.date_created
+          FROM evaluations e
+          JOIN users u_student ON e.student_id = u_student.id
+          JOIN users u_teacher ON e.teacher_id = u_teacher.id
+          JOIN courses c ON e.course_id = c.id
+          WHERE e.student_id = ?
+          ORDER BY e.date_created DESC
+        `;
+        params = [studentId];
+      } else if (type === 'teacher') {
+        sql = `
+          SELECT 
+            e.id,
+            u_student.name as student_name,
+            u_teacher.name as teacher_name,
+            c.name as course_name,
+            e.subject,
+            e.evaluation_type,
+            e.score,
+            e.feedback,
+            e.date_created
+          FROM evaluations e
+          JOIN users u_student ON e.student_id = u_student.id
+          JOIN users u_teacher ON e.teacher_id = u_teacher.id
+          JOIN courses c ON e.course_id = c.id
+          WHERE e.teacher_id = ?
+          ORDER BY e.date_created DESC
+        `;
+        params = [teacherId];
+      } else {
+        sql = `
+          SELECT 
+            e.id,
+            u_student.name as student_name,
+            u_teacher.name as teacher_name,
+            c.name as course_name,
+            e.subject,
+            e.evaluation_type,
+            e.score,
+            e.feedback,
+            e.date_created
+          FROM evaluations e
+          JOIN users u_student ON e.student_id = u_student.id
+          JOIN users u_teacher ON e.teacher_id = u_teacher.id
+          JOIN courses c ON e.course_id = c.id
+          ORDER BY e.date_created DESC
+        `;
+      }
+
+      db.all(sql, params, generateCSV);
+    }
+
+    function generateCSV(err, evaluations) {
+      if (err) {
+        return res.status(500).json({ error: 'Database error' });
+      }
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="evaluation-report.csv"');
+
+      // CSV headers
+      const headers = ['Student', 'Teacher', 'Course', 'Subject', 'Type', 'Score', 'Feedback', 'Date'];
+      let csvContent = headers.join(',') + '\n';
+
+      // CSV rows
+      evaluations.forEach(evaluation => {
+        const row = [
+          `"${evaluation.student_name || 'Student'}"`,
+          `"${evaluation.teacher_name || 'Teacher'}"`,
+          `"${evaluation.course_name || 'Course'}"`,
+          `"${evaluation.subject || ''}"`,
+          `"${evaluation.evaluation_type || ''}"`,
+          `"${evaluation.score}/100"`,
+          `"${(evaluation.feedback || 'No feedback').replace(/"/g, '""')}"`,
+          `"${evaluation.date_created || ''}"`
+        ];
+        csvContent += row.join(',') + '\n';
+      });
+
+      res.send(csvContent);
+    }
+
+    query();
   }
 };
 
