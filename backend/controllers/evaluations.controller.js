@@ -1,4 +1,5 @@
 const Evaluation = require('../models/evaluation.model');
+const db = require('../models/db');
 const PDFDocument = require('pdfkit');
 const path = require('path');
 const fs = require('fs');
