@@ -1,0 +1,128 @@
+<div class="container mt-4">
+    <div class="page-header">
+        <h1><i class="fas fa-book"></i> My Courses</h1>
+        <p class="text-muted">Manage your courses and grading rules</p>
+    </div>
+
+    <!-- Loading State -->
+    <div ng-if="loading" class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- No Courses -->
+    <div ng-if="!loading && courses.length === 0" class="alert alert-info">
+        <i class="fas fa-info-circle"></i> No courses assigned to you yet. Contact your administrator to get courses assigned.
+    </div>
+
+    <!-- Courses List -->
+    <div ng-if="!loading && courses.length > 0">
+        <div class="row">
+            <div class="col-md-6" ng-repeat="course in courses">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h4 class="text-primary">{{course.name}}</h4>
+                            <p class="text-muted" ng-if="course.description">{{course.description}}</p>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" ng-click="toggleGradingRules(course.id)">
+                            <i class="fas fa-cog"></i> Grading Rules
+                        </button>
+                    </div>
+
+                    <!-- Enrolled Students -->
+                    <div class="mb-3">
+                        <h6><i class="fas fa-users"></i> Enrolled Students ({{courseEnrollments[course.id] ? courseEnrollments[course.id].length : 0}})</h6>
+                        <div ng-if="courseEnrollments[course.id] && courseEnrollments[course.id].length > 0">
+                            <span class="badge bg-info me-1 mb-1" ng-repeat="enrollment in courseEnrollments[course.id]">
+                                {{enrollment.student_name}}
+                            </span>
+                        </div>
+                        <div ng-if="!courseEnrollments[course.id] || courseEnrollments[course.id].length === 0" 
+                             class="text-muted">
+                            No students enrolled
+                        </div>
+                    </div>
+
+                    <!-- Grading Rules Panel -->
+                    <div ng-if="showGradingRules[course.id]" class="border rounded p-3 bg-light">
+                        <h6><i class="fas fa-percentage"></i> Grading Rules</h6>
+                        <form ng-submit="updateGradingRules(course.id)">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-floating mb-2">
+                                        <input type="number" class="form-control" 
+                                               ng-model="gradingRules[course.id].participation_weight" 
+                                               min="0" max="100" placeholder="Participation %">
+                                        <label>Participation %</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-floating mb-2">
+                                        <input type="number" class="form-control" 
+                                               ng-model="gradingRules[course.id].homework_weight" 
+                                               min="0" max="100" placeholder="Homework %">
+                                        <label>Homework %</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-floating mb-2">
+                                        <input type="number" class="form-control" 
+                                               ng-model="gradingRules[course.id].exam_weight" 
+                                               min="0" max="100" placeholder="Exams %">
+                                        <label>Exams %</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-floating mb-2">
+                                        <input type="number" class="form-control" 
+                                               ng-model="gradingRules[course.id].project_weight" 
+                                               min="0" max="100" placeholder="Projects %">
+                                        <label>Projects %</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-floating mb-2">
+                                        <input type="number" class="form-control" 
+                                               ng-model="gradingRules[course.id].quiz_weight" 
+                                               min="0" max="100" placeholder="Quizzes %">
+                                        <label>Quizzes %</label>
+                                    </div>
+                                </div>
+                                <div class="col-6 d-flex align-items-end">
+                                    <div class="alert alert-warning mb-2 w-100" 
+                                         ng-if="getTotalWeight(course.id) !== 100">
+                                        Total: {{getTotalWeight(course.id)}}% (Must be 100%)
+                                    </div>
+                                    <div class="alert alert-success mb-2 w-100" 
+                                         ng-if="getTotalWeight(course.id) === 100">
+                                        Total: 100% ✓
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary btn-sm me-2" 
+                                        ng-click="showGradingRules[course.id] = false">Cancel</button>
+                                <button type="submit" class="btn btn-primary btn-sm" 
+                                        ng-disabled="getTotalWeight(course.id) !== 100">
+                                    <i class="fas fa-save"></i> Save Rules
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="mt-3">
+                        <a href="#!/teacher/evaluate" class="btn btn-success btn-sm">
+                            <i class="fas fa-plus"></i> Add Evaluation
+                        </a>
+                        <a href="#!/teacher/reports" class="btn btn-info btn-sm">
+                            <i class="fas fa-chart-bar"></i> View Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

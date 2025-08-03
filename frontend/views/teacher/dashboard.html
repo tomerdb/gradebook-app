@@ -1,0 +1,112 @@
+<div class="container mt-4">
+    <div class="page-header">
+        <h1><i class="fas fa-tachometer-alt"></i> Teacher Dashboard</h1>
+        <p class="text-muted">Welcome back! Here's your overview</p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="stat-card">
+                <h3>{{students.length}}</h3>
+                <p><i class="fas fa-user-graduate"></i> My Students</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card">
+                <h3>{{evaluations.length}}</h3>
+                <p><i class="fas fa-clipboard-list"></i> Total Evaluations</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
+                <div class="d-grid gap-2">
+                    <a href="#/teacher/evaluate" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Evaluate Students
+                    </a>
+                    <a href="#/teacher/reports" class="btn btn-outline-primary">
+                        <i class="fas fa-file-alt"></i> View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Students -->
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <h4><i class="fas fa-users"></i> My Students</h4>
+                
+                <div ng-if="loading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div ng-if="!loading && students.length === 0" class="text-center py-4">
+                    <p class="text-muted">No students assigned</p>
+                </div>
+
+                <div ng-if="!loading && students.length > 0">
+                    <div class="list-group">
+                        <div class="list-group-item" ng-repeat="student in students | limitTo:5">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{student.name}}</h6>
+                                <small>{{student.class_name}}</small>
+                            </div>
+                            <small class="text-muted">{{student.email}}</small>
+                        </div>
+                    </div>
+                    <div class="mt-2" ng-if="students.length > 5">
+                        <small class="text-muted">and {{students.length - 5}} more...</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Evaluations -->
+    <div class="dashboard-card">
+        <h4><i class="fas fa-clock"></i> Recent Evaluations</h4>
+        
+        <div ng-if="!loading && recentEvaluations.length === 0" class="text-center py-4">
+            <p class="text-muted">No recent evaluations</p>
+        </div>
+
+        <div ng-if="!loading && recentEvaluations.length > 0">
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Subject</th>
+                            <th>Type</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="evaluation in recentEvaluations">
+                            <td>{{evaluation.student_name}}</td>
+                            <td>{{evaluation.subject}}</td>
+                            <td>
+                                <span class="badge evaluation-type-badge bg-info">
+                                    {{evaluation.evaluation_type}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="evaluation-score" ng-class="getScoreClass(evaluation.score)">
+                                    {{evaluation.score}}/100
+                                </span>
+                            </td>
+                            <td>{{evaluation.date_created | date:'short'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

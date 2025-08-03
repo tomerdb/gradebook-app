@@ -1,0 +1,174 @@
+<div class="container mt-4">
+    <div class="page-header">
+        <h1><i class="fas fa-tachometer-alt"></i> Student Dashboard</h1>
+        <p class="text-muted">Welcome back! Here's your academic overview</p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4" ng-if="!loading">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3>{{stats.totalCourses}}</h3>
+                <p><i class="fas fa-book"></i> Enrolled Courses</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3>{{stats.overallGPA}}</h3>
+                <p><i class="fas fa-chart-line"></i> Overall GPA</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3>{{stats.bestCourse}}</h3>
+                <p><i class="fas fa-trophy"></i> Best Course</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3>{{stats.totalEvaluations}}</h3>
+                <p><i class="fas fa-clipboard-list"></i> Total Evaluations</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Course Grades Overview -->
+        <div class="col-md-8">
+            <div class="dashboard-card">
+                <h4><i class="fas fa-graduation-cap"></i> Course Grades</h4>
+                
+                <div ng-if="loading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div ng-if="!loading && courseGrades.length === 0" class="text-center py-4">
+                    <p class="text-muted">No courses enrolled yet</p>
+                </div>
+
+                <div ng-if="!loading && courseGrades.length > 0">
+                    <div class="row">
+                        <div class="col-md-6 mb-3" ng-repeat="course in courseGrades">
+                            <div class="card course-grade-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="card-title mb-0">{{course.course_name}}</h6>
+                                        <span class="evaluation-score" ng-class="getGradeClass(course.final_grade)">
+                                            {{course.final_grade || 0}}/100
+                                        </span>
+                                    </div>
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user"></i> {{course.teacher_name}}<br>
+                                            <i class="fas fa-clipboard-list"></i> {{course.total_evaluations || 0}} evaluations
+                                        </small>
+                                    </p>
+                                    
+                                    <!-- Grade breakdown -->
+                                    <div class="grade-breakdown mt-2">
+                                        <div ng-if="course.participation_weight > 0" class="grade-item">
+                                            <small>Participation ({{course.participation_weight}}%): {{course.avg_participation || 0}}</small>
+                                        </div>
+                                        <div ng-if="course.homework_weight > 0" class="grade-item">
+                                            <small>Homework ({{course.homework_weight}}%): {{course.avg_homework || 0}}</small>
+                                        </div>
+                                        <div ng-if="course.exam_weight > 0" class="grade-item">
+                                            <small>Exams ({{course.exam_weight}}%): {{course.avg_exam || 0}}</small>
+                                        </div>
+                                        <div ng-if="course.project_weight > 0" class="grade-item">
+                                            <small>Projects ({{course.project_weight}}%): {{course.avg_project || 0}}</small>
+                                        </div>
+                                        <div ng-if="course.quiz_weight > 0" class="grade-item">
+                                            <small>Quizzes ({{course.quiz_weight}}%): {{course.avg_quiz || 0}}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance & Quick Actions -->
+        <div class="col-md-4">
+            <div class="dashboard-card mb-3">
+                <h4><i class="fas fa-chart-pie"></i> Performance Overview</h4>
+                
+                <div ng-if="!loading">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Overall GPA</span>
+                            <span class="evaluation-score" ng-class="getGradeClass(stats.overallGPA)">
+                                {{stats.overallGPA}}/100
+                            </span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" ng-class="{
+                                'bg-success': stats.overallGPA >= 90,
+                                'bg-info': stats.overallGPA >= 80 && stats.overallGPA < 90,
+                                'bg-warning': stats.overallGPA >= 70 && stats.overallGPA < 80,
+                                'bg-danger': stats.overallGPA < 70
+                            }" role="progressbar" style="width: {{stats.overallGPA}}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info alert-custom">
+                        <i class="fas fa-lightbulb"></i> {{getPerformanceMessage()}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
+                <div class="d-grid gap-2">
+                    <a href="#/student/reports" class="btn btn-primary">
+                        <i class="fas fa-file-alt"></i> View All Reports
+                    </a>
+                    <button class="btn btn-outline-primary" ng-click="downloadPDFReport()">
+                        <i class="fas fa-download"></i> Download Gradesheet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Evaluations -->
+    <div class="dashboard-card">
+        <h4><i class="fas fa-clock"></i> Recent Evaluations</h4>
+        
+        <div ng-if="!loading && recentEvaluations.length === 0" class="text-center py-4">
+            <p class="text-muted">No evaluations yet</p>
+        </div>
+
+        <div ng-if="!loading && recentEvaluations.length > 0">
+            <div class="row">
+                <div class="col-md-6 mb-3" ng-repeat="evaluation in recentEvaluations">
+                    <div class="card evaluation-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-0">{{evaluation.subject}}</h6>
+                                <span class="evaluation-score" ng-class="getScoreClass(evaluation.score)">
+                                    {{evaluation.score}}/100
+                                </span>
+                            </div>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="fas fa-user"></i> {{evaluation.teacher_name}}<br>
+                                    <i class="fas fa-book"></i> {{evaluation.course_name}}<br>
+                                    <i class="fas fa-tag"></i> {{evaluation.evaluation_type}}<br>
+                                    <i class="fas fa-calendar"></i> {{evaluation.date_created | date:'short'}}
+                                </small>
+                            </p>
+                            <p class="card-text" ng-if="evaluation.feedback">
+                                <small>{{evaluation.feedback}}</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

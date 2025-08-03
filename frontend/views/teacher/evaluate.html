@@ -1,0 +1,101 @@
+<div class="container mt-4">
+    <div class="page-header">
+        <h1><i class="fas fa-edit"></i> Evaluate Students</h1>
+        <p class="text-muted">Create new evaluations for your students</p>
+    </div>
+
+    <div class="evaluation-form">
+        <h4><i class="fas fa-clipboard-list"></i> New Evaluation</h4>
+        
+        <div ng-if="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading courses...</span>
+            </div>
+        </div>
+
+        <form name="evaluationForm" ng-submit="submitEvaluation()" ng-if="!loading" novalidate>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="courseSelect" 
+                                ng-model="evaluation.course_id" ng-change="onCourseSelect()" required>
+                            <option value="">Select a course</option>
+                            <option ng-repeat="course in courses" ng-value="course.id">
+                                {{course.name}} - {{course.description}}
+                            </option>
+                        </select>
+                        <label for="courseSelect">Course</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="studentSelect" 
+                                ng-model="evaluation.student_id" ng-disabled="!evaluation.course_id" required>
+                            <option value="">Select a student</option>
+                            <option ng-if="loadingStudents" disabled>Loading students...</option>
+                            <option ng-repeat="student in students" ng-value="student.id">
+                                {{student.name}}
+                            </option>
+                        </select>
+                        <label for="studentSelect">Student</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="subjectInput" 
+                               ng-model="evaluation.subject" placeholder="Subject" required>
+                        <label for="subjectInput">Subject</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="typeSelect" 
+                                ng-model="evaluation.evaluation_type" required>
+                            <option ng-repeat="type in evaluationTypes" value="{{type.value}}">
+                                {{type.label}}
+                            </option>
+                        </select>
+                        <label for="typeSelect">Evaluation Type</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="scoreInput" 
+                               ng-model="evaluation.score" min="0" max="100" placeholder="Score" required>
+                        <label for="scoreInput">Score (0-100)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea class="form-control" id="feedbackTextarea" 
+                          ng-model="evaluation.feedback" placeholder="Feedback" 
+                          style="height: 100px;"></textarea>
+                <label for="feedbackTextarea">Feedback (Optional)</label>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary" ng-disabled="submitting">
+                    <span ng-if="submitting">
+                        <i class="fas fa-spinner fa-spin"></i> Submitting...
+                    </span>
+                    <span ng-if="!submitting">
+                        <i class="fas fa-save"></i> Submit Evaluation
+                    </span>
+                </button>
+            </div>
+        </form>
+
+        <div ng-if="!loading && students.length === 0" class="text-center py-4">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No students assigned to you yet.
+            </div>
+        </div>
+    </div>
+</div>

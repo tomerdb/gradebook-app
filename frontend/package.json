@@ -1,0 +1,12 @@
+{
+  "name": "grade-book-frontend",
+  "version": "1.0.0",
+  "description": "Grade Book Evaluation App Frontend",
+  "scripts": {
+    "start": "http-server -a localhost -p 8080 -o",
+    "dev": "http-server -a localhost -p 8080"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

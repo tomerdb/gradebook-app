@@ -1,0 +1,195 @@
+<div class="container mt-4">
+    <div class="page-header">
+        <h1><i class="fas fa-file-alt"></i> My Reports</h1>
+        <p class="text-muted">View your course grades and evaluation history</p>
+        <div>
+            <button class="btn btn-danger" ng-click="downloadPDFReport()">
+                <i class="fas fa-file-pdf"></i> Download Gradesheet
+            </button>
+        </div>
+    </div>
+
+    <!-- Course Grades Summary -->
+    <div class="row mb-4" ng-if="!loading && courseGrades.length > 0">
+        <div class="col-md-12">
+            <div class="dashboard-card">
+                <h5><i class="fas fa-graduation-cap"></i> Course Grades Overview</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3" ng-repeat="course in courseGrades">
+                        <div class="card course-summary-card" ng-click="viewCourseDetails(course)">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="card-title">{{course.course_name}}</h6>
+                                        <p class="card-text">
+                                            <small class="text-muted">{{course.teacher_name}}</small>
+                                        </p>
+                                    </div>
+                                    <span class="evaluation-score" ng-class="getGradeClass(course.final_grade)">
+                                        {{course.final_grade || 0}}/100
+                                    </span>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        {{course.total_evaluations || 0}} evaluations
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Details Modal -->
+    <div class="modal-overlay" ng-if="selectedCourse" ng-click="closeCourseDetails()">
+        <div class="modal-content course-details-modal" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <h5>{{selectedCourse.course_name}} - Grade Breakdown</h5>
+                <button type="button" class="btn-close" ng-click="closeCourseDetails()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <strong>Final Grade:</strong>
+                    <span class="evaluation-score large" ng-class="getGradeClass(selectedCourse.final_grade)">
+                        {{selectedCourse.final_grade || 0}}/100
+                    </span>
+                </div>
+                
+                <h6>Grade Components:</h6>
+                <div class="grade-breakdown">
+                    <div ng-if="selectedCourse.participation_weight > 0" class="grade-component">
+                        <div class="d-flex justify-content-between">
+                            <span>Participation ({{selectedCourse.participation_weight}}%)</span>
+                            <span class="score">{{selectedCourse.avg_participation || 0}}/100</span>
+                        </div>
+                    </div>
+                    <div ng-if="selectedCourse.homework_weight > 0" class="grade-component">
+                        <div class="d-flex justify-content-between">
+                            <span>Homework ({{selectedCourse.homework_weight}}%)</span>
+                            <span class="score">{{selectedCourse.avg_homework || 0}}/100</span>
+                        </div>
+                    </div>
+                    <div ng-if="selectedCourse.exam_weight > 0" class="grade-component">
+                        <div class="d-flex justify-content-between">
+                            <span>Exams ({{selectedCourse.exam_weight}}%)</span>
+                            <span class="score">{{selectedCourse.avg_exam || 0}}/100</span>
+                        </div>
+                    </div>
+                    <div ng-if="selectedCourse.project_weight > 0" class="grade-component">
+                        <div class="d-flex justify-content-between">
+                            <span>Projects ({{selectedCourse.project_weight}}%)</span>
+                            <span class="score">{{selectedCourse.avg_project || 0}}/100</span>
+                        </div>
+                    </div>
+                    <div ng-if="selectedCourse.quiz_weight > 0" class="grade-component">
+                        <div class="d-flex justify-content-between">
+                            <span>Quizzes ({{selectedCourse.quiz_weight}}%)</span>
+                            <span class="score">{{selectedCourse.avg_quiz || 0}}/100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="dashboard-card">
+        <h4><i class="fas fa-filter"></i> Filter Evaluations</h4>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="filterCourse" 
+                           ng-model="filters.course" ng-change="applyFilters()" placeholder="Course name">
+                    <label for="filterCourse">Course</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="filterTeacher" 
+                           ng-model="filters.teacher" ng-change="applyFilters()" placeholder="Teacher name">
+                    <label for="filterTeacher">Teacher</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="filterSubject" 
+                           ng-model="filters.subject" ng-change="applyFilters()" placeholder="Subject">
+                    <label for="filterSubject">Subject</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="filterType" 
+                            ng-model="filters.evaluationType" ng-change="applyFilters()">
+                        <option value="">All Types</option>
+                        <option value="exam">EXAM</option>
+                        <option value="homework">HOMEWORK</option>
+                        <option value="participation">PARTICIPATION</option>
+                        <option value="project">PROJECT</option>
+                        <option value="quiz">QUIZ</option>
+                    </select>
+                    <label for="filterType">Evaluation Type</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evaluations List -->
+    <div class="dashboard-card">
+        <h4><i class="fas fa-list"></i> Individual Evaluations ({{filteredEvaluations.length}})</h4>
+        
+        <div ng-if="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <div ng-if="!loading && filteredEvaluations.length === 0" class="text-center py-4">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No evaluations found with the current filters.
+            </div>
+        </div>
+
+        <div ng-if="!loading && filteredEvaluations.length > 0">
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Subject</th>
+                            <th>Teacher</th>
+                            <th>Type</th>
+                            <th>Score</th>
+                            <th>Feedback</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="evaluation in filteredEvaluations | orderBy:'-date_created'">
+                            <td><strong>{{evaluation.course_name}}</strong></td>
+                            <td>{{evaluation.subject}}</td>
+                            <td>{{evaluation.teacher_name}}</td>
+                            <td>
+                                <span class="badge evaluation-type-badge bg-info">
+                                    {{evaluation.evaluation_type}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="evaluation-score" ng-class="getScoreClass(evaluation.score)">
+                                    {{evaluation.score}}/100
+                                </span>
+                            </td>
+                            <td>
+                                <span ng-if="evaluation.feedback">{{evaluation.feedback}}</span>
+                                <span ng-if="!evaluation.feedback" class="text-muted">No feedback provided</span>
+                            </td>
+                            <td>{{formatDate(evaluation.date_created)}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

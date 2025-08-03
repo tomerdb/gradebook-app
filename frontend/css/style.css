@@ -1,0 +1,570 @@
+/* Custom Styles for Grade Book App */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.login-header p {
+    color: #666;
+}
+
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    font-weight: bold;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    transition: transform 0.2s;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.evaluation-card {
+    border-left: 4px solid #007bff;
+    margin-bottom: 15px;
+}
+
+.evaluation-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.score-excellent {
+    color: #28a745;
+}
+
+.score-good {
+    color: #17a2b8;
+}
+
+.score-average {
+    color: #ffc107;
+}
+
+.score-poor {
+    color: #dc3545;
+}
+
+.evaluation-form {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.page-header {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.page-header h1 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.alert-custom {
+    border-radius: 10px;
+    border: none;
+    padding: 15px 20px;
+}
+
+.table-custom {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.table-custom thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-action {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    margin: 2px;
+    transition: transform 0.2s;
+}
+
+.btn-action:hover {
+    transform: scale(1.05);
+}
+
+.loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+.form-floating label {
+    color: #666;
+}
+
+.form-floating input:focus,
+.form-floating select:focus,
+.form-floating textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.navbar-nav .nav-link {
+    transition: color 0.2s;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffc107 !important;
+}
+
+.evaluation-type-badge {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 15px;
+}
+
+/* Navbar custom styles */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    min-height: 60px;
+    z-index: 1050;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.navbar-text {
+    color: #ffffff !important;
+    font-size: 0.95rem;
+    margin-right: 0.5rem !important;
+}
+
+.navbar-text strong {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+.navbar-nav .nav-link {
+    transition: color 0.2s;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffc107 !important;
+    background-color: rgba(255, 193, 7, 0.1);
+    border-radius: 0.375rem;
+}
+
+.navbar-brand {
+    transition: color 0.2s;
+}
+
+.navbar-brand:hover {
+    color: #ffc107 !important;
+}
+
+.btn-outline-light {
+    font-weight: 500;
+    border-width: 2px;
+}
+
+.btn-outline-light:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #333;
+    transform: translateY(-1px);
+}
+
+/* Ensure navbar is always visible */
+.sticky-top {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+}
+
+/* Mobile responsive navbar */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background-color: rgba(0,0,0,0.05);
+        border-radius: 0.375rem;
+        margin-top: 0.5rem;
+        padding: 1rem;
+    }
+    
+    .navbar-nav {
+        text-align: center;
+    }
+    
+    .navbar-nav .nav-item {
+        margin-bottom: 0.5rem;
+    }
+    
+    .navbar-text {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: block;
+        text-align: center;
+    }
+    
+    .navbar-nav .btn-outline-light {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-card {
+        margin: 20px;
+        padding: 30px 20px;
+    }
+    
+    .dashboard-card {
+        margin-bottom: 15px;
+    }
+    
+    .stat-card h3 {
+        font-size: 2rem;
+    }
+    
+    .container-fluid {
+        padding-top: 1rem;
+    }
+}
+
+/* Debug info */
+.debug-info {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(255,255,255,0.9);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    border: 1px solid #ddd;
+    z-index: 1040;
+}
+
+.debug-info .btn-link {
+    font-size: 0.75rem;
+    text-decoration: underline;
+}
+
+/* Teacher-Student Assignment Styles */
+.teacher-assignment-card .card {
+    border: 1px solid #ffc107;
+}
+
+.teacher-assignment-card .card-header {
+    font-weight: 600;
+}
+
+.assigned-student {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.assigned-student .badge {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.student-list .card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.student-list .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.assigned-teachers {
+    text-align: right;
+}
+
+.assigned-teachers .badge {
+    font-size: 0.75rem;
+}
+
+/* Button improvements */
+.btn-outline-success:hover {
+    transform: scale(1.05);
+}
+
+.btn-outline-danger:hover {
+    transform: scale(1.05);
+}
+
+/* Emergency logout button */
+.emergency-logout {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 9999;
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.emergency-logout:hover {
+    background: #c82333;
+}
+
+/* Course-specific styles */
+.course-grade-card {
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.course-grade-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.course-summary-card {
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.course-summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.grade-breakdown {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.grade-item {
+    padding: 5px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.grade-item:last-child {
+    border-bottom: none;
+}
+
+.grade-component {
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.grade-component:last-child {
+    border-bottom: none;
+}
+
+.grade-component .score {
+    font-weight: bold;
+    color: #495057;
+}
+
+/* Modal styles for course details */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.course-details-modal {
+    max-width: 500px;
+    width: 90%;
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+}
+
+.modal-header h5 {
+    margin: 0;
+    flex-grow: 1;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.btn-close:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.evaluation-score.large {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Course enrollment styles */
+.course-enrollment-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.enrolled-students-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.student-item {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.student-item:last-child {
+    border-bottom: none;
+}
+
+/* Grading rules styles */
+.grading-rules-section {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.weight-input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.weight-input-group label {
+    min-width: 120px;
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+
+.weight-input-group input {
+    max-width: 80px;
+}
+
+.weight-total {
+    font-weight: bold;
+    color: #495057;
+    padding: 10px;
+    background: #e9ecef;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.weight-total.valid {
+    background: #d4edda;
+    color: #155724;
+}
+
+.weight-total.invalid {
+    background: #f8d7da;
+    color: #721c24;
+}
