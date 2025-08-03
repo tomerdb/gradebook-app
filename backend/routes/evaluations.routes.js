@@ -20,6 +20,7 @@ router.get('/stats', adminOnly, EvaluationsController.getStats);
 // Report routes (accessible by relevant roles)
 router.get('/reports/pdf', verifyToken, EvaluationsController.generatePDFReport);
 router.get('/reports/csv', verifyToken, EvaluationsController.generateCSVReport);
+router.post('/reports/filtered-pdf', verifyToken, EvaluationsController.generateFilteredPDFReport);
 
 // Get specific evaluation
 router.get('/:id', verifyToken, EvaluationsController.getById);

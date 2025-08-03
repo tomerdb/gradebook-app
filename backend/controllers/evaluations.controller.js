@@ -477,6 +477,100 @@ const EvaluationsController = {
     }
 
     query();
+  },
+
+  // Generate filtered PDF report from frontend data
+  generateFilteredPDFReport: (req, res) => {
+    const { data, token } = req.body;
+    
+    try {
+      const filteredData = JSON.parse(data);
+      const { evaluations, title, type } = filteredData;
+
+      const doc = new PDFDocument({ margin: 50 });
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="filtered-evaluation-report.pdf"');
+
+      doc.pipe(res);
+
+      // Title
+      doc.fontSize(20).text(title || 'Filtered Evaluation Report', { align: 'center' });
+      doc.moveDown();
+      doc.fontSize(12).text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'left' });
+      doc.text(`Total Evaluations: ${evaluations.length}`, { align: 'left' });
+      doc.moveDown();
+
+      if (evaluations.length === 0) {
+        doc.text('No evaluations found.', { align: 'center' });
+        doc.end();
+        return;
+      }
+
+      // Table headers
+      const tableTop = doc.y;
+      const studentCol = 50;
+      const teacherCol = type === 'filtered-teacher' ? null : 120;
+      const courseCol = type === 'filtered-teacher' ? 120 : 190;
+      const subjectCol = type === 'filtered-teacher' ? 190 : 260;
+      const typeCol = type === 'filtered-teacher' ? 260 : 330;
+      const scoreCol = type === 'filtered-teacher' ? 330 : 400;
+      const dateCol = type === 'filtered-teacher' ? 400 : 460;
+      const maxCol = 520;
+
+      // Draw table header
+      doc.fontSize(10).font('Helvetica-Bold');
+      doc.text('Student', studentCol, tableTop);
+      if (type !== 'filtered-teacher') {
+        doc.text('Teacher', teacherCol, tableTop);
+      }
+      doc.text('Course', courseCol, tableTop);
+      doc.text('Subject', subjectCol, tableTop);
+      doc.text('Type', typeCol, tableTop);
+      doc.text('Score', scoreCol, tableTop);
+      doc.text('Date', dateCol, tableTop);
+
+      // Draw header underline
+      doc.moveTo(studentCol, tableTop + 12)
+         .lineTo(maxCol, tableTop + 12)
+         .stroke();
+
+      let currentY = tableTop + 20;
+
+      // Table rows
+      doc.font('Helvetica').fontSize(8);
+      evaluations.forEach((evaluation, index) => {
+        if (currentY > 700) { // New page if needed
+          doc.addPage();
+          currentY = 50;
+        }
+
+        doc.text((evaluation.student_name || 'Student').substring(0, 12), studentCol, currentY, { width: 65 });
+        if (type !== 'filtered-teacher') {
+          doc.text((evaluation.teacher_name || 'Teacher').substring(0, 12), teacherCol, currentY, { width: 65 });
+        }
+        doc.text((evaluation.course_name || 'Course').substring(0, 12), courseCol, currentY, { width: 65 });
+        doc.text((evaluation.subject || '').substring(0, 12), subjectCol, currentY, { width: 65 });
+        doc.text((evaluation.evaluation_type || '').substring(0, 8), typeCol, currentY, { width: 65 });
+        doc.text(`${evaluation.score}/100`, scoreCol, currentY, { width: 55 });
+        doc.text(new Date(evaluation.date_created).toLocaleDateString(), dateCol, currentY, { width: 55 });
+        
+        currentY += 15;
+
+        // Add a light line between rows
+        if (index < evaluations.length - 1) {
+          doc.strokeColor('#E0E0E0')
+             .moveTo(studentCol, currentY - 5)
+             .lineTo(maxCol, currentY - 5)
+             .stroke()
+             .strokeColor('#000000');
+        }
+      });
+
+      doc.end();
+    } catch (error) {
+      console.error('Error generating filtered PDF:', error);
+      res.status(500).json({ error: 'Failed to generate PDF' });
+    }
   }
 };
 

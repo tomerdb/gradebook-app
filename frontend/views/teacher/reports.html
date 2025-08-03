@@ -3,10 +3,10 @@
         <h1><i class="fas fa-file-alt"></i> My Reports</h1>
         <p class="text-muted">View and export evaluations you've created</p>
         <div>
-            <button class="btn btn-danger me-2" ng-click="downloadPDFReport()">
+            <button class="btn btn-danger me-2" ng-click="showDownloadModal('pdf')">
                 <i class="fas fa-file-pdf"></i> Download PDF
             </button>
-            <button class="btn btn-success" ng-click="downloadCSVReport()">
+            <button class="btn btn-success" ng-click="showDownloadModal('csv')">
                 <i class="fas fa-file-csv"></i> Download CSV
             </button>
         </div>
@@ -18,22 +18,22 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="filterStudent" 
-                           ng-model="filters.student" ng-change="applyFilters()" placeholder="Student name">
+                    <input type="text" class="form-control" id="filterStudent" ng-model="filters.student"
+                        ng-change="applyFilters()" placeholder="Student name">
                     <label for="filterStudent">Student</label>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="filterSubject" 
-                           ng-model="filters.subject" ng-change="applyFilters()" placeholder="Subject">
+                    <input type="text" class="form-control" id="filterSubject" ng-model="filters.subject"
+                        ng-change="applyFilters()" placeholder="Subject">
                     <label for="filterSubject">Subject</label>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-floating mb-3">
-                    <select class="form-select" id="filterType" 
-                            ng-model="filters.evaluationType" ng-change="applyFilters()">
+                    <select class="form-select" id="filterType" ng-model="filters.evaluationType"
+                        ng-change="applyFilters()">
                         <option value="">All Types</option>
                         <option value="exam">Exam</option>
                         <option value="homework">Homework</option>
@@ -50,7 +50,7 @@
     <!-- Evaluations List -->
     <div class="dashboard-card">
         <h4><i class="fas fa-list"></i> My Evaluations ({{filteredEvaluations.length}})</h4>
-        
+
         <div ng-if="loading" class="text-center py-4">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -92,18 +92,61 @@
                                 </span>
                             </td>
                             <td>
-                                <span ng-if="evaluation.feedback">{{evaluation.feedback | limitTo:50}}{{evaluation.feedback.length > 50 ? '...' : ''}}</span>
+                                <span
+                                    ng-if="evaluation.feedback">{{evaluation.feedback | limitTo:50}}{{evaluation.feedback.length > 50 ? '...' : ''}}</span>
                                 <span ng-if="!evaluation.feedback" class="text-muted">No feedback</span>
                             </td>
                             <td>{{evaluation.date_created | date:'short'}}</td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary" ng-click="downloadStudentGradeSheet(evaluation.student_id)">
+                                <button class="btn btn-sm btn-outline-primary"
+                                    ng-click="downloadStudentGradeSheet(evaluation.student_id)">
                                     <i class="fas fa-download"></i> Download GradeSheet
                                 </button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Options Modal -->
+    <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="downloadModalLabel">
+                        <i class="fas fa-download"></i> Download Options
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Choose what data to include in your {{downloadType.toUpperCase()}} download:</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="downloadOption" id="downloadAll" value="all"
+                            ng-model="downloadOption">
+                        <label class="form-check-label" for="downloadAll">
+                            <strong>All Results</strong> ({{evaluations.length}} evaluations)
+                            <br><small class="text-muted">Download all your evaluations</small>
+                        </label>
+                    </div>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="radio" name="downloadOption" id="downloadFiltered"
+                            value="filtered" ng-model="downloadOption">
+                        <label class="form-check-label" for="downloadFiltered">
+                            <strong>Filtered Results</strong> ({{filteredEvaluations.length}} evaluations)
+                            <br><small class="text-muted">Download only the evaluations currently visible with applied
+                                filters</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" ng-click="executeDownload()"
+                        ng-disabled="!downloadOption">
+                        <i class="fas fa-download"></i> Download {{downloadType.toUpperCase()}}
+                    </button>
+                </div>
             </div>
         </div>
     </div>

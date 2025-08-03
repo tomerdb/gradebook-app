@@ -3,6 +3,11 @@ angular.module('gradeBookApp')
     var service = this;
     var API_BASE = 'http://localhost:3000/api';
     
+    // Expose API base URL
+    service.getApiBase = function() {
+        return API_BASE;
+    };
+
     function getAuthHeaders() {
         var token = AuthService.getToken();
         return {

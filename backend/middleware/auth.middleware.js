@@ -10,6 +10,11 @@ function verifyToken(req, res, next) {
   if (!token && req.query.token) {
     token = req.query.token;
   }
+  
+  // Also check for token in request body (for POST requests)
+  if (!token && req.body && req.body.token) {
+    token = req.body.token;
+  }
 
   if (!token) {
     return res.status(401).json({ error: 'Access token required' });
