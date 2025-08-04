@@ -7,7 +7,13 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' ? 
-    ['https://grade-book-frontend.onrender.com', 'https://your-frontend-url.onrender.com'] : 
+    [
+      'https://gradebook-app.onrender.com',
+      'https://grade-book-frontend.onrender.com', 
+      'https://gradebook-app-frontend.onrender.com',
+      // Allow any onrender.com subdomain for testing
+      /https:\/\/.*\.onrender\.com$/
+    ] : 
     ['http://localhost:8080', 'http://127.0.0.1:8080']
 }));
 app.use(express.json());
