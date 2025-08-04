@@ -1,5 +1,5 @@
 angular.module('gradeBookApp')
-.service('ApiService', function($http, $q, AuthService) {
+.service('ApiServiceNew', function($http, $q, AuthService) {
     var service = this;
     
     // HARDCODED PRODUCTION API URL - NO CONDITIONALS

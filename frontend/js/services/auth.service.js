@@ -3,7 +3,11 @@ angular.module('gradeBookApp')
     var self = this;
     var currentUser = null;
     var token = localStorage.getItem('authToken');
-    var API_BASE = 'http://localhost:3000/api';
+    var API_BASE = 'https://gradebook-app.onrender.com/api';
+
+    console.log('=== AUTH SERVICE LOADED ===');
+    console.log('HARDCODED API Base URL:', API_BASE);
+    console.log('==========================');
 
     // Initialize user from token if exists
     if (token) {

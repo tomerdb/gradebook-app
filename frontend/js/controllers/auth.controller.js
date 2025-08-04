@@ -1,5 +1,5 @@
 angular.module('gradeBookApp')
-.controller('AuthController', function($scope, $location, AuthService, ApiService) {
+.controller('AuthController', function($scope, $location, AuthService, ApiServiceNew) {
     $scope.credentials = {
         email: '',
         password: ''
