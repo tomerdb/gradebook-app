@@ -270,18 +270,18 @@ const EvaluationsController = {
         };
 
         const scores = {
-          participation: course.avg_participation || 0,
-          homework: course.avg_homework || 0,
-          exam: course.avg_exam || 0,
-          project: course.avg_project || 0,
-          quiz: course.avg_quiz || 0
+          participation: course.avg_participation,
+          homework: course.avg_homework,
+          exam: course.avg_exam,
+          project: course.avg_project,
+          quiz: course.avg_quiz
         };
 
         let finalGrade = 0;
         let totalWeight = 0;
 
         Object.keys(weights).forEach(type => {
-          if (weights[type] > 0 && scores[type] !== null) {
+          if (weights[type] > 0 && scores[type] !== null && scores[type] !== undefined) {
             finalGrade += (weights[type] / 100) * scores[type];
             totalWeight += weights[type];
           }
@@ -296,7 +296,13 @@ const EvaluationsController = {
           ...course,
           final_grade: Math.round(finalGrade * 100) / 100,
           weights: weights,
-          averages: scores
+          averages: {
+            participation: course.avg_participation,
+            homework: course.avg_homework,
+            exam: course.avg_exam,
+            project: course.avg_project,
+            quiz: course.avg_quiz
+          }
         };
       });
 

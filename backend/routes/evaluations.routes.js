@@ -16,6 +16,7 @@ router.delete('/:id', teacherOrAdmin, EvaluationsController.delete);
 
 // Student routes
 router.get('/student/:studentId?', verifyToken, EvaluationsController.getByStudent);
+router.get('/student/grades', verifyToken, EvaluationsController.getCourseGrades); // Add route for frontend compatibility
 router.get('/course-grades/:studentId?', verifyToken, EvaluationsController.getCourseGrades);
 router.get('/final-grade/:studentId/:courseId', verifyToken, EvaluationsController.calculateFinalGrade);
 
