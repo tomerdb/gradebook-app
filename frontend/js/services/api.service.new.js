@@ -449,7 +449,7 @@ angular.module('gradeBookApp')
         // Student-specific methods (for backward compatibility)
         service.getCourseGrades = function () {
             return handleRequest(
-                $http.get(API_BASE + '/evaluations/student/grades', {
+                $http.get(API_BASE + '/evaluations/course-grades', {
                     headers: getAuthHeaders()
                 })
             );
