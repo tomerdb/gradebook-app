@@ -2,6 +2,7 @@
 if (process.env.DATABASE_URL) {
   // Production: Use PostgreSQL
   console.log('🐘 Using PostgreSQL database');
+  console.log('📍 DATABASE_URL found:', process.env.DATABASE_URL ? 'Yes' : 'No');
   
   const { Pool } = require('pg');
   const bcrypt = require('bcryptjs');
@@ -229,6 +230,8 @@ if (process.env.DATABASE_URL) {
 } else {
   // Development: Use SQLite
   console.log('📁 Using SQLite database');
+  console.log('📍 DATABASE_URL found:', process.env.DATABASE_URL ? 'Yes' : 'No');
+  console.log('📍 NODE_ENV:', process.env.NODE_ENV);
   
   const sqlite3 = require('sqlite3').verbose();
   const bcrypt = require('bcryptjs');
