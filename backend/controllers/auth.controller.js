@@ -8,64 +8,91 @@ const {
 const AuthController = {
   // Login
   login: (req, res) => {
+    console.log('🔐 Login attempt started');
     const {
       email,
       password
     } = req.body;
 
+    console.log('📧 Email:', email);
+    console.log('🔑 Password provided:', password ? 'Yes' : 'No');
+
     if (!email || !password) {
+      console.log('❌ Missing email or password');
       return res.status(400).json({
         error: 'Email and password are required'
       });
     }
 
+    console.log('🔍 Looking up user by email...');
     User.getByEmail(email, (err, user) => {
       if (err) {
+        console.error('❌ Database error during user lookup:', err);
         return res.status(500).json({
           error: 'Database error'
         });
       }
 
       if (!user) {
+        console.log('❌ User not found');
         return res.status(401).json({
           error: 'Invalid credentials'
         });
       }
 
+      console.log('✅ User found:', user.email, 'Role:', user.role);
+      console.log('🔐 Stored password hash:', user.password ? 'Present' : 'Missing');
+
       bcrypt.compare(password, user.password, (err, isMatch) => {
         if (err) {
+          console.error('❌ Bcrypt comparison error:', err);
           return res.status(500).json({
             error: 'Authentication error'
           });
         }
 
+        console.log('🔐 Password match result:', isMatch);
+
         if (!isMatch) {
+          console.log('❌ Password does not match');
           return res.status(401).json({
             error: 'Invalid credentials'
           });
         }
 
-        // Create JWT token
-        const token = jwt.sign({
-            id: user.id,
-            email: user.email,
-            role: user.role,
-            name: user.name
-          },
-          JWT_SECRET, {
-            expiresIn: '24h'
-          }
-        );
+        console.log('✅ Password matches, creating JWT token...');
 
-        res.json({
-          token,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role
-          }
-        });
+        // Create JWT token
+        try {
+          const token = jwt.sign({
+              id: user.id,
+              email: user.email,
+              role: user.role,
+              name: user.name
+            },
+            JWT_SECRET, {
+              expiresIn: '24h'
+            }
+          );
+
+          console.log('✅ JWT token created successfully');
+          console.log('🚀 Sending successful login response');
+
+          res.json({
+            token,
+            user: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              role: user.role
+            }
+          });
+        } catch (jwtError) {
+          console.error('❌ JWT token creation error:', jwtError);
+          return res.status(500).json({
+            error: 'Token creation failed'
+          });
+        }
       });
     });
   },

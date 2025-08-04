@@ -13,7 +13,17 @@ const User = {
 
   // Get user by email (for login)
   getByEmail: (email, callback) => {
-    db.get('SELECT * FROM users WHERE email = ?', [email], callback);
+    console.log('🔍 User.getByEmail called with email:', email);
+    db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
+      if (err) {
+        console.error('❌ Database error in User.getByEmail:', err);
+      } else if (user) {
+        console.log('✅ User found in database:', user.email, 'ID:', user.id);
+      } else {
+        console.log('❌ No user found with email:', email);
+      }
+      callback(err, user);
+    });
   },
 
   // Create new user
