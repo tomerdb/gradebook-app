@@ -144,6 +144,12 @@ db.serialize(() => {
   // Add a homework evaluation for Mathematics course to complete the grading
   db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
           VALUES (4, 4, 2, 1, 'yuval', 'John Teacher', 'Mathematics', 'Homework Assignment 1', 'homework', 85, 'Good work on homework', '2025-08-02 10:30:00')`);
+
+  // Update existing data to fix inconsistencies
+  db.run(`UPDATE course_grading_rules SET quiz_weight = 20, homework_weight = 20 WHERE course_id = 3`);
+  db.run(`UPDATE evaluations SET student_name = 'yuval', teacher_name = 'tomer', course_name = 'AnimeDiscussion' WHERE id = 2`);
+  db.run(`UPDATE evaluations SET student_name = 'yuval' WHERE student_id = 4`);
+  db.run(`UPDATE evaluations SET score = 99 WHERE id = 1`);
 });
 
 module.exports = db;
