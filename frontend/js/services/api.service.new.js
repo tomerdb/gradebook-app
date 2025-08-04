@@ -2,8 +2,20 @@ angular.module('gradeBookApp')
     .service('ApiServiceNew', function ($http, $q, AuthService) {
         var service = this;
 
-        // HARDCODED PRODUCTION API URL - NO CONDITIONALS
+        // DYNAMIC API URL - PRODUCTION OR LOCAL
+        var currentHost = window.location.hostname;
         var API_BASE = 'https://gradebook-app.onrender.com/api';
+
+        // Use localhost if we're actually on localhost
+        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+            API_BASE = 'http://localhost:3000/api';
+        }
+
+        // Debug logging
+        console.log('=== API Service NEW ===');
+        console.log('Current hostname:', currentHost);
+        console.log('API Base URL:', API_BASE);
+        console.log('======================');
 
         // Expose API base URL
         service.getApiBase = function () {
