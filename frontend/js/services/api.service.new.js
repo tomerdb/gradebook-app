@@ -259,7 +259,7 @@ angular.module('gradeBookApp')
         },
         
         exportPDF: function(filters) {
-            var url = API_BASE + '/evaluations/export-pdf';
+            var url = API_BASE + '/evaluations/reports/pdf';
             var token = AuthService.getToken();
             
             if (filters) {
@@ -283,7 +283,7 @@ angular.module('gradeBookApp')
         },
         
         exportCSV: function(filters) {
-            var url = API_BASE + '/evaluations/export-csv';
+            var url = API_BASE + '/evaluations/reports/csv';
             var token = AuthService.getToken();
             
             if (filters) {
@@ -457,7 +457,7 @@ angular.module('gradeBookApp')
 
     // Report methods (for backward compatibility)
     service.downloadPDFReport = function(filters) {
-        var url = API_BASE + '/evaluations/export-pdf';
+        var url = API_BASE + '/evaluations/reports/pdf';
         var token = AuthService.getToken();
         
         if (filters) {
@@ -481,7 +481,7 @@ angular.module('gradeBookApp')
     };
 
     service.downloadCSVReport = function(filters) {
-        var url = API_BASE + '/evaluations/export-csv';
+        var url = API_BASE + '/evaluations/reports/csv';
         var token = AuthService.getToken();
         
         if (filters) {

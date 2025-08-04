@@ -45,6 +45,10 @@ angular.module('gradeBookApp')
             })
             .then(function(evaluations) {
                 $scope.recentEvaluations = evaluations.slice(0, 5); // Show last 5
+                
+                // Update total evaluations count with actual evaluations
+                $scope.stats.totalEvaluations = evaluations.length;
+                
                 $scope.loading = false;
             })
             .catch(function(error) {
@@ -70,8 +74,7 @@ angular.module('gradeBookApp')
 
     $scope.downloadPDFReport = function() {
         var user = AuthService.getCurrentUser();
-        var url = ApiServiceNew.downloadPDFReport({ type: 'student', studentId: user.id });
-        window.open(url, '_blank');
+        ApiServiceNew.evaluations.exportPDF({ type: 'student', studentId: user.id });
     };
 
     $scope.getScoreClass = function(score) {
@@ -128,8 +131,7 @@ angular.module('gradeBookApp')
 
     $scope.downloadPDFReport = function() {
         var user = AuthService.getCurrentUser();
-        var url = ApiServiceNew.downloadPDFReport({ type: 'student', studentId: user.id });
-        window.open(url, '_blank');
+        ApiServiceNew.evaluations.exportPDF({ type: 'student', studentId: user.id });
     };
 
     $scope.getGradeClass = function(grade) {

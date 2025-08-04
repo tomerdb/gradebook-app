@@ -199,20 +199,18 @@ angular.module('gradeBookApp')
 
         $scope.downloadPDFReport = function () {
             var user = AuthService.getCurrentUser();
-            var url = ApiServiceNew.downloadPDFReport({
+            ApiServiceNew.evaluations.exportPDF({
                 type: 'teacher',
                 teacherId: user.id
             });
-            window.open(url, '_blank');
         };
 
         $scope.downloadCSVReport = function () {
             var user = AuthService.getCurrentUser();
-            var url = ApiServiceNew.downloadCSVReport({
+            ApiServiceNew.evaluations.exportCSV({
                 type: 'teacher',
                 teacherId: user.id
             });
-            window.open(url, '_blank');
         };
 
         // Modal-related functions
