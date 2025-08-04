@@ -66,53 +66,48 @@ const User = {
   getStudentsByTeacher: (teacherId, callback) => {
     console.log('🔍 User.getStudentsByTeacher called with teacherId:', teacherId);
     
-    // Try to find students who have evaluations created by this teacher
-    const evaluationQuery = `
+    // Get all students who have evaluations OR are enrolled in courses taught by this teacher
+    const combinedQuery = `
       SELECT DISTINCT u.id, u.name, u.email,
-        'Has Evaluations' as course_names,
-        COUNT(DISTINCT e.id) as course_count
+        CASE 
+          WHEN course_names IS NOT NULL THEN course_names
+          ELSE 'Direct Evaluations'
+        END as course_names,
+        COALESCE(course_count, eval_count) as course_count
       FROM users u
-      JOIN evaluations e ON u.id = e.student_id
-      WHERE e.teacher_id = ? AND u.role = 'student'
-      GROUP BY u.id, u.name, u.email
+      LEFT JOIN (
+        SELECT DISTINCT u2.id, u2.name, u2.email,
+          GROUP_CONCAT(DISTINCT c.name, ', ') as course_names,
+          COUNT(DISTINCT c.id) as course_count
+        FROM users u2
+        JOIN course_enrollments ce ON u2.id = ce.student_id
+        JOIN courses c ON ce.course_id = c.id
+        WHERE c.teacher_id = ? AND u2.role = 'student'
+        GROUP BY u2.id, u2.name, u2.email
+      ) enrolled ON u.id = enrolled.id
+      LEFT JOIN (
+        SELECT DISTINCT u3.id,
+          COUNT(DISTINCT e.id) as eval_count
+        FROM users u3
+        JOIN evaluations e ON u3.id = e.student_id
+        WHERE e.teacher_id = ? AND u3.role = 'student'
+        GROUP BY u3.id
+      ) evaluated ON u.id = evaluated.id
+      WHERE u.role = 'student' 
+        AND (enrolled.id IS NOT NULL OR evaluated.id IS NOT NULL)
+      ORDER BY u.name
     `;
     
-    console.log('📋 Trying evaluation-based query first...');
-    db.all(evaluationQuery, [teacherId], (err, evalStudents) => {
+    console.log('📋 Trying combined query for all students...');
+    db.all(combinedQuery, [teacherId, teacherId], (err, allStudents) => {
       if (err) {
-        console.error('❌ Database error in evaluation query:', err);
+        console.error('❌ Database error in combined query:', err);
         return callback(err, []);
       }
       
-      console.log('✅ Evaluation query returned:', evalStudents.length, 'students');
-      
-      if (evalStudents.length > 0) {
-        console.log('📊 Evaluation-based students:', evalStudents);
-        return callback(null, evalStudents);
-      }
-      
-      // If no students found via evaluations, try course-based query
-      console.log('📋 No evaluations found, trying course-based query...');
-      const courseQuery = `
-        SELECT DISTINCT u.id, u.name, u.email, 
-          GROUP_CONCAT(c.name, ', ') as course_names,
-          COUNT(c.id) as course_count
-        FROM users u
-        JOIN course_enrollments ce ON u.id = ce.student_id
-        JOIN courses c ON ce.course_id = c.id
-        WHERE c.teacher_id = ? AND u.role = 'student'
-        GROUP BY u.id, u.name, u.email
-      `;
-      
-      db.all(courseQuery, [teacherId], (err, courseStudents) => {
-        if (err) {
-          console.error('❌ Database error in course query:', err);
-          return callback(err, []);
-        }
-        
-        console.log('✅ Course query returned:', courseStudents.length, 'students');
-        callback(null, courseStudents);
-      });
+      console.log('✅ Combined query returned:', allStudents.length, 'students');
+      console.log('📊 All students:', allStudents);
+      callback(null, allStudents);
     });
   },
 
