@@ -175,7 +175,13 @@ if (process.env.DATABASE_URL) {
         params = [];
       }
       
-      pool.query(sql, params, (err, result) => {
+      // Convert SQLite ? placeholders to PostgreSQL $1, $2, etc.
+      let paramIndex = 1;
+      const pgSql = sql.replace(/\?/g, () => `$${paramIndex++}`);
+      
+      console.log('🔍 PostgreSQL Query (all):', pgSql, 'Params:', params);
+      
+      pool.query(pgSql, params, (err, result) => {
         if (err) return callback(err);
         callback(null, result.rows);
       });
@@ -187,7 +193,13 @@ if (process.env.DATABASE_URL) {
         params = [];
       }
       
-      pool.query(sql, params, (err, result) => {
+      // Convert SQLite ? placeholders to PostgreSQL $1, $2, etc.
+      let paramIndex = 1;
+      const pgSql = sql.replace(/\?/g, () => `$${paramIndex++}`);
+      
+      console.log('🔍 PostgreSQL Query (get):', pgSql, 'Params:', params);
+      
+      pool.query(pgSql, params, (err, result) => {
         if (err) return callback(err);
         callback(null, result.rows[0] || null);
       });
@@ -199,12 +211,18 @@ if (process.env.DATABASE_URL) {
         params = [];
       }
       
+      // Convert SQLite ? placeholders to PostgreSQL $1, $2, etc.
+      let paramIndex = 1;
+      let pgSql = sql.replace(/\?/g, () => `$${paramIndex++}`);
+      
       // Add RETURNING id for INSERT statements
-      if (sql.includes('INSERT INTO') && !sql.includes('RETURNING')) {
-        sql = sql + ' RETURNING id';
+      if (pgSql.includes('INSERT INTO') && !pgSql.includes('RETURNING')) {
+        pgSql = pgSql + ' RETURNING id';
       }
       
-      pool.query(sql, params, (err, result) => {
+      console.log('🔍 PostgreSQL Query (run):', pgSql, 'Params:', params);
+      
+      pool.query(pgSql, params, (err, result) => {
         if (err && callback) return callback(err);
         
         const context = {
