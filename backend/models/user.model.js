@@ -51,8 +51,23 @@ const User = {
       role
     } = userData;
     db.run(
-      'UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?',
+      'UPDATE users SET name = $1, email = $2, role = $3 WHERE id = $4',
       [name, email, role, id],
+      callback
+    );
+  },
+
+  // Update user with password
+  updateWithPassword: (id, userData, callback) => {
+    const {
+      name,
+      email,
+      role,
+      password
+    } = userData;
+    db.run(
+      'UPDATE users SET name = $1, email = $2, role = $3, password = $4 WHERE id = $5',
+      [name, email, role, password, id],
       callback
     );
   },

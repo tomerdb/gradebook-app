@@ -95,7 +95,31 @@ angular.module('gradeBookApp')
         };
 
         $scope.updateUser = function () {
-            ApiServiceNew.updateUser($scope.editingUser.id, $scope.editingUser)
+            // Validate password if changing
+            if ($scope.editingUser.changePassword) {
+                if (!$scope.editingUser.newPassword || $scope.editingUser.newPassword.length < 3) {
+                    alert('Password must be at least 3 characters long');
+                    return;
+                }
+                if ($scope.editingUser.newPassword !== $scope.editingUser.confirmPassword) {
+                    alert('Passwords do not match');
+                    return;
+                }
+            }
+
+            // Prepare user data
+            var userData = {
+                name: $scope.editingUser.name,
+                email: $scope.editingUser.email,
+                role: $scope.editingUser.role
+            };
+
+            // Add password if changing
+            if ($scope.editingUser.changePassword) {
+                userData.password = $scope.editingUser.newPassword;
+            }
+
+            ApiServiceNew.updateUser($scope.editingUser.id, userData)
                 .then(function (response) {
                     loadUsers();
                     $scope.editingUser = null;

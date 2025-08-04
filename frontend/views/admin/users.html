@@ -234,6 +234,32 @@
                             </select>
                             <label for="editUserRole">Role</label>
                         </div>
+                        
+                        <!-- Password Change Section -->
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <input type="checkbox" id="changePassword" ng-model="editingUser.changePassword" class="me-2">
+                                    <label for="changePassword">Change Password</label>
+                                </h6>
+                            </div>
+                            <div class="card-body" ng-if="editingUser.changePassword">
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control" id="editUserPassword" 
+                                           ng-model="editingUser.newPassword" placeholder="New Password">
+                                    <label for="editUserPassword">New Password</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control" id="editUserPasswordConfirm" 
+                                           ng-model="editingUser.confirmPassword" placeholder="Confirm Password">
+                                    <label for="editUserPasswordConfirm">Confirm Password</label>
+                                </div>
+                                <div ng-if="editingUser.newPassword && editingUser.confirmPassword && editingUser.newPassword !== editingUser.confirmPassword" 
+                                     class="text-danger small">
+                                    Passwords do not match
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">

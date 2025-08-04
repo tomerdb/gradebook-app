@@ -110,7 +110,8 @@ const UsersController = {
     const {
       name,
       email,
-      role
+      role,
+      password
     } = req.body;
 
     if (!name || !email || !role) {
@@ -125,21 +126,51 @@ const UsersController = {
       });
     }
 
-    User.update(id, {
-      name,
-      email,
-      role
-    }, (err) => {
-      if (err) {
-        return res.status(500).json({
-          error: 'Update failed'
-        });
-      }
+    // If password is provided, hash it and update with password
+    if (password) {
+      bcrypt.hash(password, 10, (err, hashedPassword) => {
+        if (err) {
+          return res.status(500).json({
+            error: 'Password hashing failed'
+          });
+        }
 
-      res.json({
-        message: 'User updated successfully'
+        // Update user with password
+        User.updateWithPassword(id, {
+          name,
+          email,
+          role,
+          password: hashedPassword
+        }, (err) => {
+          if (err) {
+            return res.status(500).json({
+              error: 'Update failed'
+            });
+          }
+
+          res.json({
+            message: 'User updated successfully'
+          });
+        });
       });
-    });
+    } else {
+      // Update user without password
+      User.update(id, {
+        name,
+        email,
+        role
+      }, (err) => {
+        if (err) {
+          return res.status(500).json({
+            error: 'Update failed'
+          });
+        }
+
+        res.json({
+          message: 'User updated successfully'
+        });
+      });
+    }
   },
 
   // Delete user
