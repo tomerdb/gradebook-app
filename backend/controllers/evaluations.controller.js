@@ -251,16 +251,23 @@ const EvaluationsController = {
   // Get course grades for a student
   getCourseGrades: (req, res) => {
     const studentId = req.user.role === 'student' ? req.user.id : req.params.studentId;
+    
+    console.log('getCourseGrades called for student ID:', studentId);
 
     Evaluation.getCourseGrades(studentId, (err, grades) => {
       if (err) {
+        console.error('Error fetching course grades:', err);
         return res.status(500).json({
           error: 'Database error'
         });
       }
 
+      console.log('Raw course grades from DB:', JSON.stringify(grades, null, 2));
+
       // Calculate final grades for each course
       const coursesWithGrades = grades.map(course => {
+        console.log('Processing course:', course.course_name);
+        
         const weights = {
           participation: course.participation_weight || 0,
           homework: course.homework_weight || 0,
@@ -277,22 +284,30 @@ const EvaluationsController = {
           quiz: course.avg_quiz
         };
 
+        console.log('Weights for', course.course_name, ':', weights);
+        console.log('Scores for', course.course_name, ':', scores);
+
         let finalGrade = 0;
         let totalWeight = 0;
 
         Object.keys(weights).forEach(type => {
           if (weights[type] > 0 && scores[type] !== null && scores[type] !== undefined) {
-            finalGrade += (weights[type] / 100) * scores[type];
+            const contribution = (weights[type] / 100) * scores[type];
+            console.log(`${type}: weight=${weights[type]}%, score=${scores[type]}, contribution=${contribution}`);
+            finalGrade += contribution;
             totalWeight += weights[type];
           }
         });
 
+        console.log(`Final grade before normalization: ${finalGrade}, total weight: ${totalWeight}`);
+
         // Normalize if total weight is not 100%
         if (totalWeight > 0 && totalWeight !== 100) {
           finalGrade = (finalGrade / totalWeight) * 100;
+          console.log(`Final grade after normalization: ${finalGrade}`);
         }
 
-        return {
+        const result = {
           ...course,
           final_grade: Math.round(finalGrade * 100) / 100,
           weights: weights,
@@ -304,8 +319,12 @@ const EvaluationsController = {
             quiz: course.avg_quiz
           }
         };
+
+        console.log('Final result for', course.course_name, ':', result.final_grade);
+        return result;
       });
 
+      console.log('All courses with grades:', coursesWithGrades.map(c => ({name: c.course_name, grade: c.final_grade})));
       res.json(coursesWithGrades);
     });
   },
