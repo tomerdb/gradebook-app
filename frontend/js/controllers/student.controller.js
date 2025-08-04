@@ -16,6 +16,7 @@ angular.module('gradeBookApp')
         // Load course grades first
         ApiServiceNew.getCourseGrades()
             .then(function(courses) {
+                console.log('Course Grades Response:', courses);
                 $scope.courseGrades = courses;
                 
                 // Calculate overall statistics
@@ -24,6 +25,7 @@ angular.module('gradeBookApp')
                     
                     // Calculate GPA (average of final grades)
                     var totalGrade = courses.reduce(function(sum, course) { 
+                        console.log('Course:', course.course_name, 'Final Grade:', course.final_grade);
                         return sum + (course.final_grade || 0); 
                     }, 0);
                     $scope.stats.overallGPA = Math.round((totalGrade / courses.length) * 100) / 100;
@@ -34,10 +36,12 @@ angular.module('gradeBookApp')
                     });
                     $scope.stats.bestCourse = bestCourse.course_name;
                     
-                    // Count total evaluations
+                    // Count total evaluations from course data
                     $scope.stats.totalEvaluations = courses.reduce(function(sum, course) {
                         return sum + (course.total_evaluations || 0);
                     }, 0);
+                    
+                    console.log('Calculated Stats:', $scope.stats);
                 }
                 
                 // Load recent evaluations
