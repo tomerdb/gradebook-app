@@ -1,7 +1,7 @@
 angular.module('gradeBookApp')
 
     // Teacher Dashboard Controller
-    .controller('TeacherDashboardController', function ($scope, $location, ApiServiceNewNew, AuthService) {
+    .controller('TeacherDashboardController', function ($scope, $location, ApiServiceNew, AuthService) {
         $scope.evaluations = [];
         $scope.students = [];
         $scope.recentEvaluations = [];
@@ -20,7 +20,7 @@ angular.module('gradeBookApp')
 
         function loadDashboard() {
             // Load teacher's evaluations
-            ApiServiceNewNew.getEvaluationsByTeacher()
+            ApiServiceNew.getEvaluationsByTeacher()
                 .then(function (evaluations) {
                     $scope.evaluations = evaluations;
                     $scope.recentEvaluations = evaluations.slice(0, 5); // Show last 5
@@ -30,7 +30,7 @@ angular.module('gradeBookApp')
                 });
 
             // Load teacher's students
-            ApiServiceNewNew.getStudentsByTeacher()
+            ApiServiceNew.getStudentsByTeacher()
                 .then(function (students) {
                     $scope.students = students;
                     $scope.loading = false;

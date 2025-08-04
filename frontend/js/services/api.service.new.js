@@ -170,8 +170,8 @@ angular.module('gradeBookApp')
         
         enroll: function(courseId, studentId) {
             return handleRequest(
-                $http.post(API_BASE + '/courses/' + courseId + '/enroll', 
-                    { studentId: studentId }, {
+                $http.post(API_BASE + '/courses/enroll', 
+                    { studentId: studentId, courseId: courseId }, {
                     headers: getAuthHeaders()
                 })
             );
@@ -179,7 +179,8 @@ angular.module('gradeBookApp')
         
         unenroll: function(courseId, studentId) {
             return handleRequest(
-                $http.delete(API_BASE + '/courses/' + courseId + '/enroll/' + studentId, {
+                $http.post(API_BASE + '/courses/unenroll', 
+                    { studentId: studentId, courseId: courseId }, {
                     headers: getAuthHeaders()
                 })
             );
