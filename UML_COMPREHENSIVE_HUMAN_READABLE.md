@@ -13,8 +13,8 @@ title Grade Book Application - Complete Use Case Diagram
 
 ' Actors
 actor "System Admin" as Admin
-actor "Teacher" as Teacher
-actor "Student" as Student
+actor Teacher
+actor Student
 
 ' Authentication Package
 package "Authentication & Security" {
