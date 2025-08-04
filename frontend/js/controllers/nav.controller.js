@@ -11,12 +11,10 @@ angular.module('gradeBookApp')
         };
 
         $scope.navigateTo = function (path) {
-            console.log('Navigating to:', path);
             $location.path(path);
         };
 
         $scope.logout = function () {
-            console.log('Logout button clicked');
             AuthService.logout();
         };
 
@@ -25,7 +23,6 @@ angular.module('gradeBookApp')
             return AuthService.getCurrentUser();
         }, function (newUser) {
             $scope.user = newUser;
-            console.log('User changed in NavController:', newUser);
         });
 
         // Listen for route changes to update navbar
@@ -34,5 +31,4 @@ angular.module('gradeBookApp')
         });
 
         // Initialize
-        console.log('NavController initialized, current user:', AuthService.getCurrentUser());
     });

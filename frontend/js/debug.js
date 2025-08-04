@@ -1,7 +1,5 @@
 // Debug script to test API URL detection
-console.log('=== DEBUG SCRIPT LOADED ===');
-console.log('Current location:', window.location.href);
-console.log('Hostname:', window.location.hostname);
+// Debug logs removed for production
 
 // Test the API URL logic directly
 var currentHost = window.location.hostname;
@@ -14,20 +12,14 @@ if (isLocalhost) {
     API_BASE = 'https://gradebook-app.onrender.com/api';
 }
 
-console.log('Is localhost:', isLocalhost);
-console.log('Calculated API_BASE:', API_BASE);
-
 // Test if we can reach the API
 fetch(API_BASE + '/health')
     .then(response => {
-        console.log('Health check response:', response.status);
         return response.json();
     })
     .then(data => {
-        console.log('Health check data:', data);
+        // Health check successful
     })
     .catch(error => {
         console.error('Health check failed:', error);
     });
-
-console.log('=== END DEBUG SCRIPT ===');

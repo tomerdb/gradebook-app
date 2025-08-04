@@ -307,14 +307,14 @@ const EvaluationsController = {
         
         const result = {
           ...course,
-          final_grade: Math.round(finalGrade * 100) / 100,
+          final_grade: Math.round(finalGrade * 10) / 10, // Round to 1 decimal place
           weights: weights,
           averages: {
-            participation: course.avg_participation,
-            homework: course.avg_homework,
-            exam: course.avg_exam,
-            project: course.avg_project,
-            quiz: course.avg_quiz
+            participation: course.avg_participation ? Math.round(course.avg_participation * 10) / 10 : null,
+            homework: course.avg_homework ? Math.round(course.avg_homework * 10) / 10 : null,
+            exam: course.avg_exam ? Math.round(course.avg_exam * 10) / 10 : null,
+            project: course.avg_project ? Math.round(course.avg_project * 10) / 10 : null,
+            quiz: course.avg_quiz ? Math.round(course.avg_quiz * 10) / 10 : null
           }
         };
 

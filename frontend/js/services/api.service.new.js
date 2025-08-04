@@ -5,10 +5,6 @@ angular.module('gradeBookApp')
         // HARDCODED PRODUCTION API URL - NO CONDITIONALS
         var API_BASE = 'https://gradebook-app.onrender.com/api';
 
-        console.log('=== NEW API SERVICE LOADED ===');
-        console.log('HARDCODED API Base URL:', API_BASE);
-        console.log('==============================');
-
         // Expose API base URL
         service.getApiBase = function () {
             return API_BASE;
