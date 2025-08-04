@@ -131,12 +131,14 @@
 
                             <hr>
                             <h6 class="card-subtitle mb-2 text-muted">Enroll Students:</h6>
-                            <div class="d-flex flex-wrap">
-                                <button class="btn btn-sm btn-outline-success mb-1 me-1" ng-repeat="student in students"
-                                    ng-if="!isStudentEnrolled(student.id, course.id)"
+                            <div class="d-flex flex-wrap" ng-if="availableStudents[course.id] && availableStudents[course.id].length > 0">
+                                <button class="btn btn-sm btn-success mb-1 me-1" ng-repeat="student in availableStudents[course.id]"
                                     ng-click="enrollStudent(student.id, course.id)">
                                     <i class="fas fa-user-plus"></i> {{student.name}}
                                 </button>
+                            </div>
+                            <div ng-if="!availableStudents[course.id] || availableStudents[course.id].length === 0" class="text-muted">
+                                No students available for enrollment
                             </div>
                         </div>
                     </div>

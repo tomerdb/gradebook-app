@@ -48,6 +48,7 @@ angular.module('gradeBookApp')
         // Course management data
         $scope.courses = [];
         $scope.courseEnrollments = {};
+        $scope.availableStudents = {}; // Available students per course
         $scope.newCourse = {
             name: '',
             description: '',
@@ -170,26 +171,28 @@ angular.module('gradeBookApp')
                 .catch(function (error) {
                     console.error('Error loading teachers:', error);
                 });
-
-            // Load students
-            ApiServiceNew.getStudents()
-                .then(function (students) {
-                    $scope.students = students;
-                })
-                .catch(function (error) {
-                    console.error('Error loading students:', error);
-                });
         };
 
         $scope.loadAllEnrollments = function () {
             $scope.courseEnrollments = {};
+            $scope.availableStudents = {};
             $scope.courses.forEach(function (course) {
+                // Load current enrollments
                 ApiServiceNew.getCourseEnrollments(course.id)
                     .then(function (enrollments) {
                         $scope.courseEnrollments[course.id] = enrollments;
                     })
                     .catch(function (error) {
                         console.error('Error loading enrollments for course', course.id, ':', error);
+                    });
+
+                // Load available students for this course
+                ApiServiceNew.getAvailableStudents(course.id)
+                    .then(function (students) {
+                        $scope.availableStudents[course.id] = students;
+                    })
+                    .catch(function (error) {
+                        console.error('Error loading available students for course', course.id, ':', error);
                     });
             });
         };

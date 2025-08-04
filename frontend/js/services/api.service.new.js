@@ -200,6 +200,14 @@ angular.module('gradeBookApp')
                 );
             },
 
+            getAvailableStudents: function (courseId) {
+                return handleRequest(
+                    $http.get(API_BASE + '/courses/' + courseId + '/available-students', {
+                        headers: getAuthHeaders()
+                    })
+                );
+            },
+
             setGradingRules: function (courseId, rules) {
                 return handleRequest(
                     $http.post(API_BASE + '/courses/' + courseId + '/grading-rules', {
@@ -548,5 +556,62 @@ angular.module('gradeBookApp')
                     headers: getAuthHeaders()
                 })
             );
+        };
+
+        // Convenience methods for better readability
+        service.getCourses = function () {
+            return service.courses.getAll();
+        };
+
+        service.getCourseEnrollments = function (courseId) {
+            return service.courses.getEnrollments(courseId);
+        };
+
+        service.getAvailableStudents = function (courseId) {
+            return service.courses.getAvailableStudents(courseId);
+        };
+
+        service.createCourse = function (courseData) {
+            return service.courses.create(courseData);
+        };
+
+        service.deleteCourse = function (courseId) {
+            return service.courses.delete(courseId);
+        };
+
+        service.enrollStudent = function (studentId, courseId) {
+            return service.courses.enroll(courseId, studentId);
+        };
+
+        service.unenrollStudent = function (studentId, courseId) {
+            return service.courses.unenroll(courseId, studentId);
+        };
+
+        service.getUsers = function () {
+            return service.users.getAll();
+        };
+
+        service.createUser = function (userData) {
+            return service.users.create(userData);
+        };
+
+        service.updateUser = function (userId, userData) {
+            return service.users.update(userId, userData);
+        };
+
+        service.deleteUser = function (userId) {
+            return service.users.delete(userId);
+        };
+
+        service.getTeachers = function () {
+            return service.users.getTeachers();
+        };
+
+        service.getStudents = function () {
+            return service.users.getStudents();
+        };
+
+        service.getEvaluations = function (filters) {
+            return service.evaluations.getAll(filters);
         };
     });
