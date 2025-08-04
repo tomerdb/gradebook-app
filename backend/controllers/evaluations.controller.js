@@ -301,12 +301,10 @@ const EvaluationsController = {
 
         console.log(`Final grade before normalization: ${finalGrade}, total weight: ${totalWeight}`);
 
-        // Normalize if total weight is not 100%
-        if (totalWeight > 0 && totalWeight !== 100) {
-          finalGrade = (finalGrade / totalWeight) * 100;
-          console.log(`Final grade after normalization: ${finalGrade}`);
-        }
-
+        // Don't normalize - use actual weighted score
+        // If totalWeight < 100, it means some evaluation types are missing
+        // The final grade should reflect the actual percentage earned out of 100
+        
         const result = {
           ...course,
           final_grade: Math.round(finalGrade * 100) / 100,
