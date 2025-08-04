@@ -2,13 +2,24 @@ angular.module('gradeBookApp')
 .service('ApiService', function($http, $q, AuthService) {
     var service = this;
     
-    // Detect if we're in production or development
-    var isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+    // Force production API for deployed frontend
+    var currentHost = window.location.hostname;
+    var isProduction = currentHost.includes('onrender.com') || 
+                      currentHost.includes('render.com') ||
+                      (currentHost !== 'localhost' && currentHost !== '127.0.0.1');
+    
+    // Use your actual backend URL - update this with your real backend URL
     var API_BASE = isProduction ? 
         'https://grade-book-backend.onrender.com/api' : 
         'http://localhost:3000/api';
     
-    console.log('API Base URL:', API_BASE, '(Production:', isProduction, ')');
+    // Debug logging
+    console.log('=== API Service Debug ===');
+    console.log('Current hostname:', currentHost);
+    console.log('Full URL:', window.location.href);
+    console.log('Is Production:', isProduction);
+    console.log('API Base URL:', API_BASE);
+    console.log('========================');
     
     // Expose API base URL
     service.getApiBase = function() {
