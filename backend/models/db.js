@@ -1,9 +1,16 @@
-const sqlite3 = require('sqlite3').verbose();
-const bcrypt = require('bcrypt');
-const path = require('path');
+// Environment-based database configuration
+if (process.env.DATABASE_URL) {
+  console.log('🐘 Using PostgreSQL database');
+  module.exports = require('./db.postgres');
+} else {
+  console.log('📁 Using SQLite database');
+  
+  const sqlite3 = require('sqlite3').verbose();
+  const bcrypt = require('bcryptjs');
+  const path = require('path');
 
-const dbPath = path.join(__dirname, '..', 'gradingapp.db');
-const db = new sqlite3.Database(dbPath);
+  const dbPath = path.join(__dirname, '..', 'gradingapp.db');
+  const db = new sqlite3.Database(dbPath);
 
 db.serialize(() => {
         // Users table
@@ -152,4 +159,5 @@ db.serialize(() => {
         db.run(`UPDATE evaluations SET score = 99 WHERE id = 1`);
 });
 
-module.exports = db;
+  module.exports = db;
+}
