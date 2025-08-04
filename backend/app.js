@@ -20,6 +20,14 @@ app.use(express.urlencoded({
   extended: true
 }));
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`🌐 ${req.method} ${req.url} - ${new Date().toISOString()}`);
+  console.log('📄 Request body:', req.body);
+  console.log('🔗 Request headers:', req.headers);
+  next();
+});
+
 // Initialize database
 require('./models/db');
 
@@ -37,11 +45,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Test route for debugging
+app.post('/api/test', (req, res) => {
+  console.log('🧪 Test route hit');
+  res.json({
+    message: 'Test route working',
+    body: req.body
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('❌ Express error handler:', err.stack);
+  console.error('❌ Error message:', err.message);
   res.status(500).json({
-    error: 'Something went wrong!'
+    error: 'Something went wrong!',
+    message: err.message
   });
 });
 
