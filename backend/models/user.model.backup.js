@@ -94,24 +94,51 @@ const User = {
       // If no students found via evaluations, try course-based query
       console.log('📋 No evaluations found, trying course-based query...');
       const courseQuery = `
-        SELECT DISTINCT u.id, u.name, u.email, 
-          GROUP_CONCAT(c.name, ', ') as course_names,
-          COUNT(c.id) as course_count
+      SELECT DISTINCT u.id, u.name, u.email, 
+        GROUP_CONCAT(c.name, ', ') as course_names,
+        COUNT(c.id) as course_count
+      FROM users u
+      JOIN course_enrollments ce ON u.id = ce.student_id
+      JOIN courses c ON ce.course_id = c.id
+      WHERE c.teacher_id = ? AND u.role = 'student'
+      GROUP BY u.id, u.name, u.email
+    `;
+    
+    console.log('📋 Trying course-based query first...');
+    db.all(courseQuery, [teacherId], (err, courseStudents) => {
+      if (err) {
+        console.error('❌ Database error in course query:', err);
+        return callback(err, []);
+      }
+      
+      console.log('✅ Course query returned:', courseStudents.length, 'students');
+      
+      if (courseStudents.length > 0) {
+        console.log('� Course-based students:', courseStudents);
+        return callback(null, courseStudents);
+      }
+      
+      // If no students found via courses, try class-based assignment
+      console.log('�📋 No course enrollments found, trying class-based assignments...');
+      const classQuery = `
+        SELECT DISTINCT u.id, u.name, u.email,
+          'Direct Assignment' as course_names,
+          0 as course_count
         FROM users u
-        JOIN course_enrollments ce ON u.id = ce.student_id
-        JOIN courses c ON ce.course_id = c.id
+        JOIN student_classes sc ON u.id = sc.student_id
+        JOIN classes c ON sc.class_id = c.id
         WHERE c.teacher_id = ? AND u.role = 'student'
-        GROUP BY u.id, u.name, u.email
       `;
       
-      db.all(courseQuery, [teacherId], (err, courseStudents) => {
+      db.all(classQuery, [teacherId], (err, classStudents) => {
         if (err) {
-          console.error('❌ Database error in course query:', err);
+          console.error('❌ Database error in class query:', err);
           return callback(err, []);
         }
         
-        console.log('✅ Course query returned:', courseStudents.length, 'students');
-        callback(null, courseStudents);
+        console.log('✅ Class query returned:', classStudents.length, 'students');
+        console.log('📊 Class-based students:', classStudents);
+        callback(null, classStudents);
       });
     });
   },

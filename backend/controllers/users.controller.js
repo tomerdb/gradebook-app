@@ -164,13 +164,17 @@ const UsersController = {
   // Get students by teacher
   getStudentsByTeacher: (req, res) => {
     const teacherId = req.user.role === 'teacher' ? req.user.id : req.params.teacherId;
+    console.log('🔍 getStudentsByTeacher called for teacherId:', teacherId);
 
     User.getStudentsByTeacher(teacherId, (err, students) => {
       if (err) {
+        console.error('❌ Error in getStudentsByTeacher:', err);
         return res.status(500).json({
           error: 'Database error'
         });
       }
+      console.log('✅ Found students for teacher:', students.length, 'students');
+      console.log('Students data:', students);
       res.json(students);
     });
   },
