@@ -3,7 +3,7 @@
 ## 1. Use Case Diagram
 
 ```plantuml
-@startuml use_case_diagram
+@startuml
 !theme plain
 
 title Grade Book Application - Use Case Diagram
@@ -119,7 +119,7 @@ UC18 .> UC23 : <<extend>>
 ## 2. Class Diagram
 
 ```plantuml
-@startuml class_diagram
+@startuml
 !theme plain
 
 title Grade Book Application - Class Diagram
@@ -343,7 +343,7 @@ AuthMiddleware --> EvaluationsController
 ## 3. Activity Diagram
 
 ```plantuml
-@startuml activity_diagram
+@startuml
 !theme plain
 
 title Grade Book Application - Student Evaluation Process Activity Diagram
@@ -410,7 +410,7 @@ endif
 ### Alternative Activity Diagram - Student Grade Viewing Process
 
 ```plantuml
-@startuml student_activity_diagram
+@startuml
 !theme plain
 
 title Grade Book Application - Student Grade Viewing Process
@@ -464,7 +464,7 @@ endif
 ## 4. State Machine Diagram
 
 ```plantuml
-@startuml state_machine_diagram
+@startuml
 !theme plain
 
 title Grade Book Application - User Session State Machine
