@@ -112,8 +112,8 @@ db.serialize(() => {
   db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight) 
           VALUES (2, 15, 35, 50)`);
 
-  db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight) 
-          VALUES (3, 20, 40, 40)`);
+  db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight, quiz_weight) 
+          VALUES (3, 20, 20, 40, 20)`);
 
   // Insert sample enrollments (enroll student ID 3 in both courses, and yuval ID 4 in all courses)
   db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
@@ -133,13 +133,17 @@ db.serialize(() => {
 
   // Insert sample evaluations
   db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
-          VALUES (1, 4, 2, 1, 'Jane Student', 'John Teacher', 'Mathematics', 'Final exam', 'exam', 90, 'Excellent work!', '2025-08-03 13:45:00')`);
+          VALUES (1, 4, 2, 1, 'yuval', 'John Teacher', 'Mathematics', 'Final exam', 'exam', 99, 'Excellent work!', '2025-08-03 13:45:00')`);
 
   db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
-          VALUES (2, 4, 5, 3, 'Jane Student', 'John Teacher', 'Mathematics', 'Mathematics Quiz', 'quiz', 95, 'Great performance!', '2025-08-03 14:46:57')`);
+          VALUES (2, 4, 5, 3, 'yuval', 'tomer', 'AnimeDiscussion', 'Mathematics Quiz', 'quiz', 95, 'Great performance!', '2025-08-03 14:46:57')`);
 
   db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
-          VALUES (3, 4, 2, 1, 'Jane Student', 'John Teacher', 'Mathematics', 'Class Participation', 'participation', 92, 'Active participation in discussions', '2025-08-03 13:44:42')`);
+          VALUES (3, 4, 2, 1, 'yuval', 'John Teacher', 'Mathematics', 'Class Participation', 'participation', 92, 'Active participation in discussions', '2025-08-03 13:44:42')`);
+
+  // Add a homework evaluation for Mathematics course to complete the grading
+  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
+          VALUES (4, 4, 2, 1, 'yuval', 'John Teacher', 'Mathematics', 'Homework Assignment 1', 'homework', 85, 'Good work on homework', '2025-08-02 10:30:00')`);
 });
 
 module.exports = db;
