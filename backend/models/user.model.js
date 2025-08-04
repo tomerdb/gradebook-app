@@ -66,48 +66,34 @@ const User = {
   getStudentsByTeacher: (teacherId, callback) => {
     console.log('🔍 User.getStudentsByTeacher called with teacherId:', teacherId);
     
-    // Get all students who have evaluations OR are enrolled in courses taught by this teacher
-    const combinedQuery = `
+    // First, try a simple query to get students who have evaluations by this teacher
+    const simpleQuery = `
       SELECT DISTINCT u.id, u.name, u.email,
-        CASE 
-          WHEN course_names IS NOT NULL THEN course_names
-          ELSE 'Direct Evaluations'
-        END as course_names,
-        COALESCE(course_count, eval_count) as course_count
+        'Has Evaluations' as course_names,
+        COUNT(e.id) as course_count
       FROM users u
-      LEFT JOIN (
-        SELECT DISTINCT u2.id, u2.name, u2.email,
-          GROUP_CONCAT(DISTINCT c.name, ', ') as course_names,
-          COUNT(DISTINCT c.id) as course_count
-        FROM users u2
-        JOIN course_enrollments ce ON u2.id = ce.student_id
-        JOIN courses c ON ce.course_id = c.id
-        WHERE c.teacher_id = ? AND u2.role = 'student'
-        GROUP BY u2.id, u2.name, u2.email
-      ) enrolled ON u.id = enrolled.id
-      LEFT JOIN (
-        SELECT DISTINCT u3.id,
-          COUNT(DISTINCT e.id) as eval_count
-        FROM users u3
-        JOIN evaluations e ON u3.id = e.student_id
-        WHERE e.teacher_id = ? AND u3.role = 'student'
-        GROUP BY u3.id
-      ) evaluated ON u.id = evaluated.id
-      WHERE u.role = 'student' 
-        AND (enrolled.id IS NOT NULL OR evaluated.id IS NOT NULL)
+      INNER JOIN evaluations e ON u.id = e.student_id
+      WHERE e.teacher_id = $1 AND u.role = 'student'
+      GROUP BY u.id, u.name, u.email
       ORDER BY u.name
     `;
     
-    console.log('📋 Trying combined query for all students...');
-    db.all(combinedQuery, [teacherId, teacherId], (err, allStudents) => {
+    console.log('📋 Executing simple evaluation query...');
+    console.log('📋 Query:', simpleQuery);
+    console.log('📋 Teacher ID:', teacherId);
+    
+    db.all(simpleQuery, [teacherId], (err, students) => {
       if (err) {
-        console.error('❌ Database error in combined query:', err);
+        console.error('❌ Database error:', err);
+        console.error('❌ Error details:', err.message);
         return callback(err, []);
       }
       
-      console.log('✅ Combined query returned:', allStudents.length, 'students');
-      console.log('📊 All students:', allStudents);
-      callback(null, allStudents);
+      console.log('✅ Query executed successfully');
+      console.log('✅ Found', students.length, 'students');
+      console.log('📊 Students data:', JSON.stringify(students, null, 2));
+      
+      callback(null, students);
     });
   },
 
