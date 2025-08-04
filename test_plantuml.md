@@ -7,16 +7,12 @@ This is a simple test to verify PlantUML syntax is working.
 ```plantuml
 @startuml
 !theme plain
-
 title Test Diagram
-
 actor User
 usecase "Login" as UC1
 usecase "Logout" as UC2
-
 User --> UC1
 User --> UC2
-
 @enduml
 ```
 
@@ -25,22 +21,17 @@ User --> UC2
 ```plantuml
 @startuml
 !theme plain
-
 title Test Class Diagram
-
 class User {
   -id: Integer
   -name: String
   +login(): Boolean
   +logout(): void
 }
-
 class System {
   +authenticate(user): Boolean
 }
-
 User --> System : uses
-
 @enduml
 ```
 
