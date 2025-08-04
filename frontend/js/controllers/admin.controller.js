@@ -118,6 +118,29 @@ angular.module('gradeBookApp')
             }
         };
 
+        // Tab management functions
+        $scope.showAddUserTab = function() {
+            $scope.showAddForm = true;
+            $scope.showCourseManagement = false;
+        };
+
+        $scope.showCourseManagementTab = function() {
+            $scope.showCourseManagement = true;
+            $scope.showAddForm = false;
+            loadCourseData();
+        };
+
+        $scope.cancelAddUser = function() {
+            $scope.showAddForm = false;
+            // Reset the form data
+            $scope.newUser = {
+                name: '',
+                email: '',
+                password: '',
+                role: 'student'
+            };
+        };
+
         $scope.cancelEdit = function () {
             $scope.editingUser = null;
         };

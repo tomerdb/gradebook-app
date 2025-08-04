@@ -568,3 +568,22 @@ body {
     background: #f8d7da;
     color: #721c24;
 }
+
+/* Tab button styles */
+.btn.active {
+    background-color: #0056b3 !important;
+    border-color: #004085 !important;
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.btn-info.active {
+    background-color: #0f5132 !important;
+    border-color: #0a3622 !important;
+}
+
+.btn-primary.active {
+    background-color: #0056b3 !important;
+    border-color: #004085 !important;
+}
