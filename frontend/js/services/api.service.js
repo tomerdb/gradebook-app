@@ -2,23 +2,23 @@ angular.module('gradeBookApp')
 .service('ApiService', function($http, $q, AuthService) {
     var service = this;
     
-    // FORCE PRODUCTION API - Override for deployment issue
+    // ABSOLUTE OVERRIDE - NO CONDITIONAL LOGIC
     var currentHost = window.location.hostname;
-    var API_BASE;
     
+    // FORCE PRODUCTION API URL FOR RENDER DEPLOYMENT
+    var API_BASE = 'https://gradebook-app.onrender.com/api';
+    
+    // Only use localhost if we're actually on localhost
     if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
         API_BASE = 'http://localhost:3000/api';
-    } else {
-        // Force production API for ANY non-localhost domain
-        API_BASE = 'https://gradebook-app.onrender.com/api';
     }
     
     // Debug logging
-    console.log('=== API Service Debug (FORCED) ===');
+    console.log('=== API Service v2 (ABSOLUTE OVERRIDE) ===');
     console.log('Current hostname:', currentHost);
-    console.log('FORCED API Base URL:', API_BASE);
+    console.log('ABSOLUTE API Base URL:', API_BASE);
     console.log('Full location:', window.location.href);
-    console.log('==================================');
+    console.log('========================================');
     
     // Expose API base URL
     service.getApiBase = function() {
