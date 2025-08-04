@@ -3,11 +3,22 @@ const db = require('./db');
 const Evaluation = {
   // Create new evaluation
   create: (evaluationData, callback) => {
-    const { student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback } = evaluationData;
+    const {
+      student_id,
+      teacher_id,
+      course_id,
+      student_name,
+      teacher_name,
+      course_name,
+      subject,
+      evaluation_type,
+      score,
+      feedback
+    } = evaluationData;
     db.run(
       'INSERT INTO evaluations (student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback],
-      function(err) {
+      function (err) {
         callback(err, this ? this.lastID : null);
       }
     );
@@ -85,7 +96,12 @@ const Evaluation = {
 
   // Update evaluation
   update: (id, evaluationData, callback) => {
-    const { subject, evaluation_type, score, feedback } = evaluationData;
+    const {
+      subject,
+      evaluation_type,
+      score,
+      feedback
+    } = evaluationData;
     db.run(
       'UPDATE evaluations SET subject = ?, evaluation_type = ?, score = ?, feedback = ? WHERE id = ?',
       [subject, evaluation_type, score, feedback, id],
@@ -165,7 +181,10 @@ const Evaluation = {
       }
 
       if (!result) {
-        return callback(null, { finalGrade: 0, breakdown: {} });
+        return callback(null, {
+          finalGrade: 0,
+          breakdown: {}
+        });
       }
 
       // Calculate weighted final grade

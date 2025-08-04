@@ -98,8 +98,7 @@
                             </td>
                             <td>{{evaluation.date_created | date:'short'}}</td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary" 
-                                    ng-click="editEvaluation(evaluation)">
+                                <button class="btn btn-sm btn-outline-primary" ng-click="editEvaluation(evaluation)">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
                             </td>
@@ -152,7 +151,8 @@
     </div>
 
     <!-- Edit Evaluation Modal -->
-    <div class="modal fade" id="editEvaluationModal" tabindex="-1" aria-labelledby="editEvaluationModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editEvaluationModal" tabindex="-1" aria-labelledby="editEvaluationModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -163,17 +163,18 @@
                     <form ng-submit="updateEvaluation()">
                         <div class="mb-3">
                             <label for="editStudent" class="form-label">Student</label>
-                            <input type="text" class="form-control" id="editStudent" 
+                            <input type="text" class="form-control" id="editStudent"
                                 ng-model="editingEvaluation.student_name" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="editSubject" class="form-label">Subject</label>
-                            <input type="text" class="form-control" id="editSubject" 
+                            <input type="text" class="form-control" id="editSubject"
                                 ng-model="editingEvaluation.subject" required>
                         </div>
                         <div class="mb-3">
                             <label for="editType" class="form-label">Evaluation Type</label>
-                            <select class="form-control" id="editType" ng-model="editingEvaluation.evaluation_type" required>
+                            <select class="form-control" id="editType" ng-model="editingEvaluation.evaluation_type"
+                                required>
                                 <option value="exam">Exam</option>
                                 <option value="homework">Homework</option>
                                 <option value="participation">Participation</option>
@@ -183,13 +184,13 @@
                         </div>
                         <div class="mb-3">
                             <label for="editScore" class="form-label">Score (0-100)</label>
-                            <input type="number" class="form-control" id="editScore" 
-                                ng-model="editingEvaluation.score" min="0" max="100" required>
+                            <input type="number" class="form-control" id="editScore" ng-model="editingEvaluation.score"
+                                min="0" max="100" required>
                         </div>
                         <div class="mb-3">
                             <label for="editFeedback" class="form-label">Feedback</label>
-                            <textarea class="form-control" id="editFeedback" 
-                                ng-model="editingEvaluation.feedback" rows="3"></textarea>
+                            <textarea class="form-control" id="editFeedback" ng-model="editingEvaluation.feedback"
+                                rows="3"></textarea>
                         </div>
                     </form>
                 </div>

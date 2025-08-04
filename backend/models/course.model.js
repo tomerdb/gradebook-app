@@ -34,13 +34,17 @@ const Course = {
 
   // Create new course
   create: (courseData, callback) => {
-    const { name, description, teacher_id } = courseData;
+    const {
+      name,
+      description,
+      teacher_id
+    } = courseData;
     db.run(
       'INSERT INTO courses (name, description, teacher_id) VALUES (?, ?, ?)',
       [name, description, teacher_id],
-      function(err) {
+      function (err) {
         if (err) return callback(err);
-        
+
         // Create default grading rules for the new course
         db.run(
           'INSERT INTO course_grading_rules (course_id) VALUES (?)',
@@ -55,7 +59,11 @@ const Course = {
 
   // Update course
   update: (id, courseData, callback) => {
-    const { name, description, teacher_id } = courseData;
+    const {
+      name,
+      description,
+      teacher_id
+    } = courseData;
     db.run(
       'UPDATE courses SET name = ?, description = ?, teacher_id = ? WHERE id = ?',
       [name, description, teacher_id, id],
@@ -117,7 +125,13 @@ const Course = {
 
   // Update grading rules for course
   updateGradingRules: (courseId, rules, callback) => {
-    const { participation_weight, homework_weight, exam_weight, project_weight, quiz_weight } = rules;
+    const {
+      participation_weight,
+      homework_weight,
+      exam_weight,
+      project_weight,
+      quiz_weight
+    } = rules;
     db.run(`
       UPDATE course_grading_rules 
       SET participation_weight = ?, homework_weight = ?, exam_weight = ?, 

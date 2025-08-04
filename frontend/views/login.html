@@ -11,30 +11,18 @@
             </div>
 
             <div class="form-floating mb-3">
-                <input type="email" 
-                       class="form-control" 
-                       id="email" 
-                       placeholder="name@example.com"
-                       ng-model="credentials.email"
-                       ng-focus="clearError()"
-                       required>
+                <input type="email" class="form-control" id="email" placeholder="name@example.com"
+                    ng-model="credentials.email" ng-focus="clearError()" required>
                 <label for="email">Email address</label>
             </div>
 
             <div class="form-floating mb-3">
-                <input type="password" 
-                       class="form-control" 
-                       id="password" 
-                       placeholder="Password"
-                       ng-model="credentials.password"
-                       ng-focus="clearError()"
-                       required>
+                <input type="password" class="form-control" id="password" placeholder="Password"
+                    ng-model="credentials.password" ng-focus="clearError()" required>
                 <label for="password">Password</label>
             </div>
 
-            <button type="submit" 
-                    class="btn btn-login" 
-                    ng-disabled="loading">
+            <button type="submit" class="btn btn-login" ng-disabled="loading">
                 <span ng-if="loading">
                     <i class="fas fa-spinner fa-spin"></i> Signing in...
                 </span>

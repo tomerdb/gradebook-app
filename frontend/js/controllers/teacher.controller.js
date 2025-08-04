@@ -8,12 +8,12 @@ angular.module('gradeBookApp')
         $scope.loading = true;
 
         // Navigation functions for quick actions
-        $scope.navigateToEvaluate = function() {
+        $scope.navigateToEvaluate = function () {
             console.log('Navigating to evaluate page');
             $location.path('/teacher/evaluate');
         };
 
-        $scope.navigateToReports = function() {
+        $scope.navigateToReports = function () {
             console.log('Navigating to reports page');
             $location.path('/teacher/reports');
         };
@@ -323,7 +323,7 @@ angular.module('gradeBookApp')
         // Edit evaluation functionality
         $scope.editingEvaluation = {};
 
-        $scope.editEvaluation = function(evaluation) {
+        $scope.editEvaluation = function (evaluation) {
             // Create a copy of the evaluation for editing
             $scope.editingEvaluation = angular.copy(evaluation);
             // Show the modal
@@ -331,7 +331,7 @@ angular.module('gradeBookApp')
             modal.show();
         };
 
-        $scope.updateEvaluation = function() {
+        $scope.updateEvaluation = function () {
             if (!$scope.editingEvaluation.id) {
                 console.error('No evaluation ID found');
                 return;
@@ -345,7 +345,7 @@ angular.module('gradeBookApp')
             };
 
             ApiServiceNew.updateEvaluation($scope.editingEvaluation.id, updateData)
-                .then(function(response) {
+                .then(function (response) {
                     console.log('Evaluation updated successfully');
                     // Hide the modal
                     var modal = bootstrap.Modal.getInstance(document.getElementById('editEvaluationModal'));
@@ -353,7 +353,7 @@ angular.module('gradeBookApp')
                     // Reload evaluations to show updated data
                     loadEvaluations();
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     console.error('Error updating evaluation:', error);
                     alert('Error updating evaluation. Please try again.');
                 });

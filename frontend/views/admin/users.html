@@ -3,12 +3,11 @@
         <h1><i class="fas fa-users"></i> User Management</h1>
         <p class="text-muted">Add, edit, and manage system users</p>
         <div class="d-flex">
-            <button class="btn btn-primary me-2" ng-click="showAddUserTab()" 
-                    ng-class="{'active': showAddForm}">
+            <button class="btn btn-primary me-2" ng-click="showAddUserTab()" ng-class="{'active': showAddForm}">
                 <i class="fas fa-plus"></i> Add New User
             </button>
             <button class="btn btn-info" ng-click="showCourseManagementTab()"
-                    ng-class="{'active': showCourseManagement}">
+                ng-class="{'active': showCourseManagement}">
                 <i class="fas fa-book"></i> Manage Courses & Enrollments
             </button>
         </div>
@@ -21,15 +20,15 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="newUserName" 
-                               ng-model="newUser.name" placeholder="Full Name" required>
+                        <input type="text" class="form-control" id="newUserName" ng-model="newUser.name"
+                            placeholder="Full Name" required>
                         <label for="newUserName">Full Name</label>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="newUserEmail" 
-                               ng-model="newUser.email" placeholder="Email" required>
+                        <input type="email" class="form-control" id="newUserEmail" ng-model="newUser.email"
+                            placeholder="Email" required>
                         <label for="newUserEmail">Email</label>
                     </div>
                 </div>
@@ -37,8 +36,8 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-floating mb-3">
-                        <input type="password" class="form-control" id="newUserPassword" 
-                               ng-model="newUser.password" placeholder="Password" required>
+                        <input type="password" class="form-control" id="newUserPassword" ng-model="newUser.password"
+                            placeholder="Password" required>
                         <label for="newUserPassword">Password</label>
                     </div>
                 </div>
@@ -65,18 +64,20 @@
     <!-- Course Management -->
     <div class="dashboard-card" ng-if="showCourseManagement">
         <h4><i class="fas fa-book"></i> Course Management & Student Enrollments</h4>
-        
+
         <!-- Add Course Form -->
         <div class="row mb-4">
             <div class="col-md-6">
                 <h5><i class="fas fa-plus"></i> Add New Course</h5>
                 <form ng-submit="createCourse()" class="mb-3">
                     <div class="form-floating mb-2">
-                        <input type="text" class="form-control" ng-model="newCourse.name" placeholder="Course Name" required>
+                        <input type="text" class="form-control" ng-model="newCourse.name" placeholder="Course Name"
+                            required>
                         <label>Course Name</label>
                     </div>
                     <div class="form-floating mb-2">
-                        <textarea class="form-control" ng-model="newCourse.description" placeholder="Description" style="height: 60px;"></textarea>
+                        <textarea class="form-control" ng-model="newCourse.description" placeholder="Description"
+                            style="height: 60px;"></textarea>
                         <label>Description</label>
                     </div>
                     <div class="form-floating mb-2">
@@ -112,27 +113,28 @@
                         </div>
                         <div class="card-body">
                             <p class="text-muted" ng-if="course.description">{{course.description}}</p>
-                            
+
                             <h6 class="card-subtitle mb-2 text-muted">Enrolled Students:</h6>
                             <div ng-if="courseEnrollments[course.id] && courseEnrollments[course.id].length > 0">
-                                <span class="badge bg-info me-1 mb-1" ng-repeat="enrollment in courseEnrollments[course.id]">
+                                <span class="badge bg-info me-1 mb-1"
+                                    ng-repeat="enrollment in courseEnrollments[course.id]">
                                     {{enrollment.student_name}}
-                                    <button class="btn btn-sm ms-1" style="background: none; border: none; color: white; font-size: 0.7rem;" 
-                                            ng-click="unenrollStudent(enrollment.student_id, course.id)">×</button>
+                                    <button class="btn btn-sm ms-1"
+                                        style="background: none; border: none; color: white; font-size: 0.7rem;"
+                                        ng-click="unenrollStudent(enrollment.student_id, course.id)">×</button>
                                 </span>
                             </div>
-                            <div ng-if="!courseEnrollments[course.id] || courseEnrollments[course.id].length === 0" 
-                                 class="text-muted">
+                            <div ng-if="!courseEnrollments[course.id] || courseEnrollments[course.id].length === 0"
+                                class="text-muted">
                                 No students enrolled
                             </div>
-                            
+
                             <hr>
                             <h6 class="card-subtitle mb-2 text-muted">Enroll Students:</h6>
                             <div class="d-flex flex-wrap">
-                                <button class="btn btn-sm btn-outline-success mb-1 me-1" 
-                                        ng-repeat="student in students"
-                                        ng-if="!isStudentEnrolled(student.id, course.id)"
-                                        ng-click="enrollStudent(student.id, course.id)">
+                                <button class="btn btn-sm btn-outline-success mb-1 me-1" ng-repeat="student in students"
+                                    ng-if="!isStudentEnrolled(student.id, course.id)"
+                                    ng-click="enrollStudent(student.id, course.id)">
                                     <i class="fas fa-user-plus"></i> {{student.name}}
                                 </button>
                             </div>
@@ -141,7 +143,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div ng-if="courses.length === 0" class="alert alert-warning">
             <i class="fas fa-info-circle"></i> No courses found. Create a course to get started.
         </div>
@@ -150,7 +152,7 @@
     <!-- Users List -->
     <div class="dashboard-card">
         <h4><i class="fas fa-list"></i> All Users</h4>
-        
+
         <div ng-if="loading" class="text-center py-4">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -188,12 +190,10 @@
                             </td>
                             <td>{{user.created_at | date:'short'}}</td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary btn-action" 
-                                        ng-click="editUser(user)">
+                                <button class="btn btn-sm btn-outline-primary btn-action" ng-click="editUser(user)">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger btn-action" 
-                                        ng-click="deleteUser(user)">
+                                <button class="btn btn-sm btn-outline-danger btn-action" ng-click="deleteUser(user)">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -215,13 +215,13 @@
                 <div class="modal-body">
                     <form ng-submit="updateUser()" novalidate>
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="editUserName" 
-                                   ng-model="editingUser.name" placeholder="Full Name" required>
+                            <input type="text" class="form-control" id="editUserName" ng-model="editingUser.name"
+                                placeholder="Full Name" required>
                             <label for="editUserName">Full Name</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="editUserEmail" 
-                                   ng-model="editingUser.email" placeholder="Email" required>
+                            <input type="email" class="form-control" id="editUserEmail" ng-model="editingUser.email"
+                                placeholder="Email" required>
                             <label for="editUserEmail">Email</label>
                         </div>
                         <div class="form-floating mb-3">

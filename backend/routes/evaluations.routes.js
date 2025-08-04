@@ -1,6 +1,12 @@
 const router = require('express').Router();
 const EvaluationsController = require('../controllers/evaluations.controller');
-const { teacherOnly, studentOnly, adminOnly, verifyToken, teacherOrAdmin } = require('../middleware/auth.middleware');
+const {
+    teacherOnly,
+    studentOnly,
+    adminOnly,
+    verifyToken,
+    teacherOrAdmin
+} = require('../middleware/auth.middleware');
 
 // Teacher only routes
 router.post('/', teacherOnly, EvaluationsController.create);

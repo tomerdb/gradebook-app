@@ -1,6 +1,10 @@
 const router = require('express').Router();
 const UsersController = require('../controllers/users.controller');
-const { adminOnly, teacherOrAdmin, verifyToken } = require('../middleware/auth.middleware');
+const {
+    adminOnly,
+    teacherOrAdmin,
+    verifyToken
+} = require('../middleware/auth.middleware');
 
 // Admin only routes
 router.get('/', adminOnly, UsersController.getAll);

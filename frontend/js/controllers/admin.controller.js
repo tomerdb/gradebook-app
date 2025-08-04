@@ -119,18 +119,18 @@ angular.module('gradeBookApp')
         };
 
         // Tab management functions
-        $scope.showAddUserTab = function() {
+        $scope.showAddUserTab = function () {
             $scope.showAddForm = true;
             $scope.showCourseManagement = false;
         };
 
-        $scope.showCourseManagementTab = function() {
+        $scope.showCourseManagementTab = function () {
             $scope.showCourseManagement = true;
             $scope.showAddForm = false;
             loadCourseData();
         };
 
-        $scope.cancelAddUser = function() {
+        $scope.cancelAddUser = function () {
             $scope.showAddForm = false;
             // Reset the form data
             $scope.newUser = {
@@ -424,7 +424,7 @@ angular.module('gradeBookApp')
 
             // Check if modal element exists
             var modalElement = document.getElementById('downloadModal');
-            
+
             if (!modalElement) {
                 console.error('Modal element not found!');
                 return;

@@ -9,8 +9,15 @@ const EvaluationsController = {
   create: (req, res) => {
     console.log('Evaluation create request body:', req.body);
     console.log('User from token:', req.user);
-    
-    const { student_id, course_id, subject, evaluation_type, score, feedback } = req.body;
+
+    const {
+      student_id,
+      course_id,
+      subject,
+      evaluation_type,
+      score,
+      feedback
+    } = req.body;
     const teacher_id = req.user.id;
 
     // Convert score to number if it's a string
@@ -18,24 +25,38 @@ const EvaluationsController = {
 
     if (!student_id || !course_id || !subject || !evaluation_type || score === undefined || score === null || score === '') {
       console.log('Validation failed - missing fields:', {
-        student_id, course_id, subject, evaluation_type, score, numericScore
+        student_id,
+        course_id,
+        subject,
+        evaluation_type,
+        score,
+        numericScore
       });
-      return res.status(400).json({ error: 'All required fields must be provided' });
+      return res.status(400).json({
+        error: 'All required fields must be provided'
+      });
     }
 
     if (isNaN(numericScore) || numericScore < 0 || numericScore > 100) {
-      console.log('Validation failed - invalid score:', { score, numericScore });
-      return res.status(400).json({ error: 'Score must be between 0 and 100' });
+      console.log('Validation failed - invalid score:', {
+        score,
+        numericScore
+      });
+      return res.status(400).json({
+        error: 'Score must be between 0 and 100'
+      });
     }
 
     if (!['exam', 'homework', 'participation', 'project', 'quiz'].includes(evaluation_type)) {
       console.log('Validation failed - invalid evaluation type:', evaluation_type);
-      return res.status(400).json({ error: 'Invalid evaluation type' });
+      return res.status(400).json({
+        error: 'Invalid evaluation type'
+      });
     }
 
     // Fetch names to store them permanently
     const db = require('../models/db');
-    
+
     db.get(`
       SELECT 
         s.name as student_name,
@@ -46,11 +67,15 @@ const EvaluationsController = {
     `, [student_id, teacher_id, course_id], (err, names) => {
       if (err) {
         console.log('Error fetching names:', err);
-        return res.status(500).json({ error: 'Failed to fetch user/course names' });
+        return res.status(500).json({
+          error: 'Failed to fetch user/course names'
+        });
       }
 
       if (!names) {
-        return res.status(400).json({ error: 'Invalid student, teacher, or course ID' });
+        return res.status(400).json({
+          error: 'Invalid student, teacher, or course ID'
+        });
       }
 
       const evaluationData = {
@@ -71,7 +96,9 @@ const EvaluationsController = {
       Evaluation.create(evaluationData, (err, evaluationId) => {
         if (err) {
           console.log('Database error creating evaluation:', err);
-          return res.status(500).json({ error: 'Failed to create evaluation' });
+          return res.status(500).json({
+            error: 'Failed to create evaluation'
+          });
         }
 
         console.log('Evaluation created successfully with ID:', evaluationId);
@@ -89,7 +116,9 @@ const EvaluationsController = {
 
     Evaluation.getByStudentId(studentId, (err, evaluations) => {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        return res.status(500).json({
+          error: 'Database error'
+        });
       }
       res.json(evaluations);
     });
@@ -101,7 +130,9 @@ const EvaluationsController = {
 
     Evaluation.getByTeacherId(teacherId, (err, evaluations) => {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        return res.status(500).json({
+          error: 'Database error'
+        });
       }
       res.json(evaluations);
     });
@@ -111,7 +142,9 @@ const EvaluationsController = {
   getAll: (req, res) => {
     Evaluation.getAll((err, evaluations) => {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        return res.status(500).json({
+          error: 'Database error'
+        });
       }
       res.json(evaluations);
     });
@@ -119,15 +152,21 @@ const EvaluationsController = {
 
   // Get evaluation by ID
   getById: (req, res) => {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     Evaluation.getById(id, (err, evaluation) => {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        return res.status(500).json({
+          error: 'Database error'
+        });
       }
 
       if (!evaluation) {
-        return res.status(404).json({ error: 'Evaluation not found' });
+        return res.status(404).json({
+          error: 'Evaluation not found'
+        });
       }
 
       res.json(evaluation);
@@ -136,15 +175,26 @@ const EvaluationsController = {
 
   // Update evaluation
   update: (req, res) => {
-    const { id } = req.params;
-    const { subject, evaluation_type, score, feedback } = req.body;
+    const {
+      id
+    } = req.params;
+    const {
+      subject,
+      evaluation_type,
+      score,
+      feedback
+    } = req.body;
 
     if (!subject || !evaluation_type || score === undefined) {
-      return res.status(400).json({ error: 'Subject, evaluation type, and score are required' });
+      return res.status(400).json({
+        error: 'Subject, evaluation type, and score are required'
+      });
     }
 
     if (score < 0 || score > 100) {
-      return res.status(400).json({ error: 'Score must be between 0 and 100' });
+      return res.status(400).json({
+        error: 'Score must be between 0 and 100'
+      });
     }
 
     const evaluationData = {
@@ -156,23 +206,33 @@ const EvaluationsController = {
 
     Evaluation.update(id, evaluationData, (err) => {
       if (err) {
-        return res.status(500).json({ error: 'Update failed' });
+        return res.status(500).json({
+          error: 'Update failed'
+        });
       }
 
-      res.json({ message: 'Evaluation updated successfully' });
+      res.json({
+        message: 'Evaluation updated successfully'
+      });
     });
   },
 
   // Delete evaluation
   delete: (req, res) => {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     Evaluation.delete(id, (err) => {
       if (err) {
-        return res.status(500).json({ error: 'Delete failed' });
+        return res.status(500).json({
+          error: 'Delete failed'
+        });
       }
 
-      res.json({ message: 'Evaluation deleted successfully' });
+      res.json({
+        message: 'Evaluation deleted successfully'
+      });
     });
   },
 
@@ -180,7 +240,9 @@ const EvaluationsController = {
   getStats: (req, res) => {
     Evaluation.getStats((err, stats) => {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        return res.status(500).json({
+          error: 'Database error'
+        });
       }
       res.json(stats);
     });
@@ -192,7 +254,9 @@ const EvaluationsController = {
 
     Evaluation.getCourseGrades(studentId, (err, grades) => {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        return res.status(500).json({
+          error: 'Database error'
+        });
       }
 
       // Calculate final grades for each course
@@ -242,11 +306,16 @@ const EvaluationsController = {
 
   // Calculate final grade for a specific course
   calculateFinalGrade: (req, res) => {
-    const { studentId, courseId } = req.params;
+    const {
+      studentId,
+      courseId
+    } = req.params;
 
     Evaluation.calculateFinalGrade(studentId, courseId, (err, result) => {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        return res.status(500).json({
+          error: 'Database error'
+        });
       }
       res.json(result);
     });
@@ -254,13 +323,19 @@ const EvaluationsController = {
 
   // Generate PDF report
   generatePDFReport: (req, res) => {
-    const { studentId, teacherId, type } = req.query;
+    const {
+      studentId,
+      teacherId,
+      type
+    } = req.query;
 
     if (type === 'student' && studentId) {
       // For student reports, generate a course-based gradesheet
       Evaluation.getCourseGrades(studentId, (err, grades) => {
         if (err) {
-          return res.status(500).json({ error: 'Database error' });
+          return res.status(500).json({
+            error: 'Database error'
+          });
         }
 
         // Calculate final grades for each course (same logic as getCourseGrades)
@@ -316,23 +391,33 @@ const EvaluationsController = {
 
       function generatePDF(err, evaluations) {
         if (err) {
-          return res.status(500).json({ error: 'Database error' });
+          return res.status(500).json({
+            error: 'Database error'
+          });
         }
 
-        const doc = new PDFDocument({ margin: 50 });
+        const doc = new PDFDocument({
+          margin: 50
+        });
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename="evaluation-report.pdf"');
 
         doc.pipe(res);
 
         // Title
-        doc.fontSize(20).text('Evaluation Report', { align: 'center' });
+        doc.fontSize(20).text('Evaluation Report', {
+          align: 'center'
+        });
         doc.moveDown();
-        doc.fontSize(12).text(`Date: ${new Date().toLocaleDateString()}`, { align: 'left' });
+        doc.fontSize(12).text(`Date: ${new Date().toLocaleDateString()}`, {
+          align: 'left'
+        });
         doc.moveDown();
 
         if (evaluations.length === 0) {
-          doc.text('No evaluations found.', { align: 'center' });
+          doc.text('No evaluations found.', {
+            align: 'center'
+          });
           doc.end();
           return;
         }
@@ -360,8 +445,8 @@ const EvaluationsController = {
 
         // Draw header underline
         doc.moveTo(studentCol, tableTop + 12)
-           .lineTo(maxCol, tableTop + 12)
-           .stroke();
+          .lineTo(maxCol, tableTop + 12)
+          .stroke();
 
         let currentY = tableTop + 20;
 
@@ -373,23 +458,37 @@ const EvaluationsController = {
             currentY = 50;
           }
 
-          doc.text((evaluation.student_name || 'Student').substring(0, 12), studentCol, currentY, { width: 65 });
-          doc.text((evaluation.teacher_name || 'Teacher').substring(0, 12), teacherCol, currentY, { width: 65 });
-          doc.text((evaluation.course_name || 'Course').substring(0, 12), courseCol, currentY, { width: 65 });
-          doc.text((evaluation.subject || '').substring(0, 12), subjectCol, currentY, { width: 65 });
-          doc.text((evaluation.evaluation_type || '').substring(0, 8), typeCol, currentY, { width: 65 });
-          doc.text(`${evaluation.score}/100`, scoreCol, currentY, { width: 55 });
-          doc.text(new Date(evaluation.date_created).toLocaleDateString(), dateCol, currentY, { width: 55 });
-          
+          doc.text((evaluation.student_name || 'Student').substring(0, 12), studentCol, currentY, {
+            width: 65
+          });
+          doc.text((evaluation.teacher_name || 'Teacher').substring(0, 12), teacherCol, currentY, {
+            width: 65
+          });
+          doc.text((evaluation.course_name || 'Course').substring(0, 12), courseCol, currentY, {
+            width: 65
+          });
+          doc.text((evaluation.subject || '').substring(0, 12), subjectCol, currentY, {
+            width: 65
+          });
+          doc.text((evaluation.evaluation_type || '').substring(0, 8), typeCol, currentY, {
+            width: 65
+          });
+          doc.text(`${evaluation.score}/100`, scoreCol, currentY, {
+            width: 55
+          });
+          doc.text(new Date(evaluation.date_created).toLocaleDateString(), dateCol, currentY, {
+            width: 55
+          });
+
           currentY += 15;
 
           // Add a light line between rows
           if (index < evaluations.length - 1) {
             doc.strokeColor('#E0E0E0')
-               .moveTo(studentCol, currentY - 5)
-               .lineTo(maxCol, currentY - 5)
-               .stroke()
-               .strokeColor('#000000');
+              .moveTo(studentCol, currentY - 5)
+              .lineTo(maxCol, currentY - 5)
+              .stroke()
+              .strokeColor('#000000');
           }
         });
 
@@ -402,7 +501,11 @@ const EvaluationsController = {
 
   // Generate CSV report
   generateCSVReport: (req, res) => {
-    const { type, teacherId, studentId } = req.query;
+    const {
+      type,
+      teacherId,
+      studentId
+    } = req.query;
 
     function query() {
       let sql;
@@ -473,7 +576,9 @@ const EvaluationsController = {
 
     function generateCSV(err, evaluations) {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        return res.status(500).json({
+          error: 'Database error'
+        });
       }
 
       res.setHeader('Content-Type', 'text/csv');
@@ -506,27 +611,44 @@ const EvaluationsController = {
 
   // Generate filtered PDF report from frontend data
   generateFilteredPDFReport: (req, res) => {
-    const { data, token } = req.body;
-    
+    const {
+      data,
+      token
+    } = req.body;
+
     try {
       const filteredData = JSON.parse(data);
-      const { evaluations, title, type } = filteredData;
+      const {
+        evaluations,
+        title,
+        type
+      } = filteredData;
 
-      const doc = new PDFDocument({ margin: 50 });
+      const doc = new PDFDocument({
+        margin: 50
+      });
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'attachment; filename="filtered-evaluation-report.pdf"');
 
       doc.pipe(res);
 
       // Title
-      doc.fontSize(20).text(title || 'Filtered Evaluation Report', { align: 'center' });
+      doc.fontSize(20).text(title || 'Filtered Evaluation Report', {
+        align: 'center'
+      });
       doc.moveDown();
-      doc.fontSize(12).text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'left' });
-      doc.text(`Total Evaluations: ${evaluations.length}`, { align: 'left' });
+      doc.fontSize(12).text(`Generated on: ${new Date().toLocaleDateString()}`, {
+        align: 'left'
+      });
+      doc.text(`Total Evaluations: ${evaluations.length}`, {
+        align: 'left'
+      });
       doc.moveDown();
 
       if (evaluations.length === 0) {
-        doc.text('No evaluations found.', { align: 'center' });
+        doc.text('No evaluations found.', {
+          align: 'center'
+        });
         doc.end();
         return;
       }
@@ -556,8 +678,8 @@ const EvaluationsController = {
 
       // Draw header underline
       doc.moveTo(studentCol, tableTop + 12)
-         .lineTo(maxCol, tableTop + 12)
-         .stroke();
+        .lineTo(maxCol, tableTop + 12)
+        .stroke();
 
       let currentY = tableTop + 20;
 
@@ -569,56 +691,82 @@ const EvaluationsController = {
           currentY = 50;
         }
 
-        doc.text((evaluation.student_name || 'Student').substring(0, 12), studentCol, currentY, { width: 65 });
+        doc.text((evaluation.student_name || 'Student').substring(0, 12), studentCol, currentY, {
+          width: 65
+        });
         if (type !== 'filtered-teacher') {
-          doc.text((evaluation.teacher_name || 'Teacher').substring(0, 12), teacherCol, currentY, { width: 65 });
+          doc.text((evaluation.teacher_name || 'Teacher').substring(0, 12), teacherCol, currentY, {
+            width: 65
+          });
         }
-        doc.text((evaluation.course_name || 'Course').substring(0, 12), courseCol, currentY, { width: 65 });
-        doc.text((evaluation.subject || '').substring(0, 12), subjectCol, currentY, { width: 65 });
-        doc.text((evaluation.evaluation_type || '').substring(0, 8), typeCol, currentY, { width: 65 });
-        doc.text(`${evaluation.score}/100`, scoreCol, currentY, { width: 55 });
-        doc.text(new Date(evaluation.date_created).toLocaleDateString(), dateCol, currentY, { width: 55 });
-        
+        doc.text((evaluation.course_name || 'Course').substring(0, 12), courseCol, currentY, {
+          width: 65
+        });
+        doc.text((evaluation.subject || '').substring(0, 12), subjectCol, currentY, {
+          width: 65
+        });
+        doc.text((evaluation.evaluation_type || '').substring(0, 8), typeCol, currentY, {
+          width: 65
+        });
+        doc.text(`${evaluation.score}/100`, scoreCol, currentY, {
+          width: 55
+        });
+        doc.text(new Date(evaluation.date_created).toLocaleDateString(), dateCol, currentY, {
+          width: 55
+        });
+
         currentY += 15;
 
         // Add a light line between rows
         if (index < evaluations.length - 1) {
           doc.strokeColor('#E0E0E0')
-             .moveTo(studentCol, currentY - 5)
-             .lineTo(maxCol, currentY - 5)
-             .stroke()
-             .strokeColor('#000000');
+            .moveTo(studentCol, currentY - 5)
+            .lineTo(maxCol, currentY - 5)
+            .stroke()
+            .strokeColor('#000000');
         }
       });
 
       doc.end();
     } catch (error) {
       console.error('Error generating filtered PDF:', error);
-      res.status(500).json({ error: 'Failed to generate PDF' });
+      res.status(500).json({
+        error: 'Failed to generate PDF'
+      });
     }
   }
 };
 
 // Helper function to generate student gradesheet PDF
 function generateStudentGradesheetPDF(res, courses, studentId) {
-  const doc = new PDFDocument({ margin: 50 });
+  const doc = new PDFDocument({
+    margin: 50
+  });
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', 'attachment; filename="student-gradesheet.pdf"');
 
   doc.pipe(res);
 
   // Title
-  doc.fontSize(20).text('Student Gradesheet', { align: 'center' });
+  doc.fontSize(20).text('Student Gradesheet', {
+    align: 'center'
+  });
   doc.moveDown();
 
   // Get student name from first course (if available)
   const studentName = courses.length > 0 ? courses[0].student_name : 'Student';
-  doc.fontSize(14).text(`Student: ${studentName}`, { align: 'left' });
-  doc.fontSize(12).text(`Date: ${new Date().toLocaleDateString()}`, { align: 'left' });
+  doc.fontSize(14).text(`Student: ${studentName}`, {
+    align: 'left'
+  });
+  doc.fontSize(12).text(`Date: ${new Date().toLocaleDateString()}`, {
+    align: 'left'
+  });
   doc.moveDown();
 
   if (courses.length === 0) {
-    doc.text('No courses enrolled.', { align: 'center' });
+    doc.text('No courses enrolled.', {
+      align: 'center'
+    });
     doc.end();
     return;
   }
@@ -638,8 +786,8 @@ function generateStudentGradesheetPDF(res, courses, studentId) {
 
   // Draw header underline
   doc.moveTo(courseCol, tableTop + 15)
-     .lineTo(maxCol, tableTop + 15)
-     .stroke();
+    .lineTo(maxCol, tableTop + 15)
+    .stroke();
 
   let currentY = tableTop + 25;
 
@@ -647,20 +795,24 @@ function generateStudentGradesheetPDF(res, courses, studentId) {
   doc.font('Helvetica');
   let totalGrade = 0;
   courses.forEach((course, index) => {
-    doc.text(course.course_name || 'Unknown Course', courseCol, currentY, { width: 190 });
-    doc.text(course.teacher_name || 'Unknown Teacher', teacherCol, currentY, { width: 190 });
+    doc.text(course.course_name || 'Unknown Course', courseCol, currentY, {
+      width: 190
+    });
+    doc.text(course.teacher_name || 'Unknown Teacher', teacherCol, currentY, {
+      width: 190
+    });
     doc.text(course.final_grade ? `${course.final_grade.toFixed(1)}%` : 'N/A', gradeCol, currentY);
-    
+
     totalGrade += course.final_grade || 0;
     currentY += 20;
 
     // Add a light line between rows
     if (index < courses.length - 1) {
       doc.strokeColor('#E0E0E0')
-         .moveTo(courseCol, currentY - 5)
-         .lineTo(maxCol, currentY - 5)
-         .stroke()
-         .strokeColor('#000000');
+        .moveTo(courseCol, currentY - 5)
+        .lineTo(maxCol, currentY - 5)
+        .stroke()
+        .strokeColor('#000000');
     }
   });
 
@@ -669,8 +821,8 @@ function generateStudentGradesheetPDF(res, courses, studentId) {
 
   // Draw bottom line
   doc.moveTo(courseCol, currentY)
-     .lineTo(maxCol, currentY)
-     .stroke();
+    .lineTo(maxCol, currentY)
+    .stroke();
 
   currentY += 15;
 

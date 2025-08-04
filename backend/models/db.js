@@ -6,8 +6,8 @@ const dbPath = path.join(__dirname, '..', 'gradingapp.db');
 const db = new sqlite3.Database(dbPath);
 
 db.serialize(() => {
-  // Users table
-  db.run(`CREATE TABLE IF NOT EXISTS users (
+        // Users table
+        db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
@@ -16,8 +16,8 @@ db.serialize(() => {
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
   )`);
 
-  // Classes table (now called Courses)
-  db.run(`CREATE TABLE IF NOT EXISTS courses (
+        // Classes table (now called Courses)
+        db.run(`CREATE TABLE IF NOT EXISTS courses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     description TEXT,
@@ -26,8 +26,8 @@ db.serialize(() => {
     FOREIGN KEY (teacher_id) REFERENCES users(id)
   )`);
 
-  // Course grading rules table
-  db.run(`CREATE TABLE IF NOT EXISTS course_grading_rules (
+        // Course grading rules table
+        db.run(`CREATE TABLE IF NOT EXISTS course_grading_rules (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     course_id INTEGER,
     participation_weight INTEGER DEFAULT 20,
@@ -40,8 +40,8 @@ db.serialize(() => {
     UNIQUE(course_id)
   )`);
 
-  // Student-Course enrollment table
-  db.run(`CREATE TABLE IF NOT EXISTS course_enrollments (
+        // Student-Course enrollment table
+        db.run(`CREATE TABLE IF NOT EXISTS course_enrollments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_id INTEGER,
     course_id INTEGER,
@@ -51,8 +51,8 @@ db.serialize(() => {
     UNIQUE(student_id, course_id)
   )`);
 
-  // Evaluations table (updated to use courses)
-  db.run(`CREATE TABLE IF NOT EXISTS evaluations (
+        // Evaluations table (updated to use courses)
+        db.run(`CREATE TABLE IF NOT EXISTS evaluations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_id INTEGER NOT NULL,
     teacher_id INTEGER NOT NULL,
@@ -70,86 +70,86 @@ db.serialize(() => {
     FOREIGN KEY (course_id) REFERENCES courses(id)
   )`);
 
-  // Insert default admin user if not exists
-  const adminPassword = bcrypt.hashSync('admin123', 10);
-  db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
+        // Insert default admin user if not exists
+        const adminPassword = bcrypt.hashSync('admin123', 10);
+        db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
           VALUES ('Admin User', 'admin@gradebook.com', ?, 'admin')`, [adminPassword]);
 
-  // Insert sample teacher if not exists
-  const teacherPassword = bcrypt.hashSync('teacher123', 10);
-  db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
+        // Insert sample teacher if not exists
+        const teacherPassword = bcrypt.hashSync('teacher123', 10);
+        db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
           VALUES ('John Teacher', 'teacher@gradebook.com', ?, 'teacher')`, [teacherPassword]);
 
-  // Insert sample student if not exists
-  const studentPassword = bcrypt.hashSync('student123', 10);
-  db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
+        // Insert sample student if not exists
+        const studentPassword = bcrypt.hashSync('student123', 10);
+        db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
           VALUES ('Jane Student', 'student@gradebook.com', ?, 'student')`, [studentPassword]);
 
-  // Insert another sample student (yuval)
-  const yuvalPassword = bcrypt.hashSync('yuval123', 10);
-  db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
+        // Insert another sample student (yuval)
+        const yuvalPassword = bcrypt.hashSync('yuval123', 10);
+        db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
           VALUES ('yuval', 'yuval@gradebook.com', ?, 'student')`, [yuvalPassword]);
 
-  // Insert another teacher (tomer)
-  const tomerPassword = bcrypt.hashSync('tomer123', 10);
-  db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
+        // Insert another teacher (tomer)
+        const tomerPassword = bcrypt.hashSync('tomer123', 10);
+        db.run(`INSERT OR IGNORE INTO users (name, email, password, role) 
           VALUES ('tomer', 'tomer@gradebook.com', ?, 'teacher')`, [tomerPassword]);
 
-  // Insert sample courses
-  db.run(`INSERT OR IGNORE INTO courses (id, name, description, teacher_id) 
+        // Insert sample courses
+        db.run(`INSERT OR IGNORE INTO courses (id, name, description, teacher_id) 
           VALUES (1, 'Mathematics', 'Basic Mathematics Course', 2)`);
-  
-  db.run(`INSERT OR IGNORE INTO courses (id, name, description, teacher_id) 
+
+        db.run(`INSERT OR IGNORE INTO courses (id, name, description, teacher_id) 
           VALUES (2, 'Science', 'General Science Course', 2)`);
 
-  db.run(`INSERT OR IGNORE INTO courses (id, name, description, teacher_id) 
+        db.run(`INSERT OR IGNORE INTO courses (id, name, description, teacher_id) 
           VALUES (3, 'AnimeDiscussion', 'Anime Discussion Course', 5)`);
 
-  // Insert default grading rules for courses
-  db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight) 
+        // Insert default grading rules for courses
+        db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight) 
           VALUES (1, 20, 40, 40)`);
-  
-  db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight) 
+
+        db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight) 
           VALUES (2, 15, 35, 50)`);
 
-  db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight, quiz_weight) 
+        db.run(`INSERT OR IGNORE INTO course_grading_rules (course_id, participation_weight, homework_weight, exam_weight, quiz_weight) 
           VALUES (3, 20, 20, 40, 20)`);
 
-  // Insert sample enrollments (enroll student ID 3 in both courses, and yuval ID 4 in all courses)
-  db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
+        // Insert sample enrollments (enroll student ID 3 in both courses, and yuval ID 4 in all courses)
+        db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
           VALUES (3, 1)`);
-  
-  db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
+
+        db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
           VALUES (3, 2)`);
 
-  db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
+        db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
           VALUES (4, 1)`);
-  
-  db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
+
+        db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
           VALUES (4, 2)`);
 
-  db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
+        db.run(`INSERT OR IGNORE INTO course_enrollments (student_id, course_id) 
           VALUES (4, 3)`);
 
-  // Insert sample evaluations
-  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
+        // Insert sample evaluations
+        db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
           VALUES (1, 4, 2, 1, 'yuval', 'John Teacher', 'Mathematics', 'Final exam', 'exam', 99, 'Excellent work!', '2025-08-03 13:45:00')`);
 
-  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
+        db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
           VALUES (2, 4, 5, 3, 'yuval', 'tomer', 'AnimeDiscussion', 'Mathematics Quiz', 'quiz', 95, 'Great performance!', '2025-08-03 14:46:57')`);
 
-  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
+        db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
           VALUES (3, 4, 2, 1, 'yuval', 'John Teacher', 'Mathematics', 'Class Participation', 'participation', 92, 'Active participation in discussions', '2025-08-03 13:44:42')`);
 
-  // Add a homework evaluation for Mathematics course to complete the grading
-  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
+        // Add a homework evaluation for Mathematics course to complete the grading
+        db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
           VALUES (4, 4, 2, 1, 'yuval', 'John Teacher', 'Mathematics', 'Homework Assignment 1', 'homework', 85, 'Good work on homework', '2025-08-02 10:30:00')`);
 
-  // Update existing data to fix inconsistencies
-  db.run(`UPDATE course_grading_rules SET quiz_weight = 20, homework_weight = 20 WHERE course_id = 3`);
-  db.run(`UPDATE evaluations SET student_name = 'yuval', teacher_name = 'tomer', course_name = 'AnimeDiscussion' WHERE id = 2`);
-  db.run(`UPDATE evaluations SET student_name = 'yuval' WHERE student_id = 4`);
-  db.run(`UPDATE evaluations SET score = 99 WHERE id = 1`);
+        // Update existing data to fix inconsistencies
+        db.run(`UPDATE course_grading_rules SET quiz_weight = 20, homework_weight = 20 WHERE course_id = 3`);
+        db.run(`UPDATE evaluations SET student_name = 'yuval', teacher_name = 'tomer', course_name = 'AnimeDiscussion' WHERE id = 2`);
+        db.run(`UPDATE evaluations SET student_name = 'yuval' WHERE student_id = 4`);
+        db.run(`UPDATE evaluations SET score = 99 WHERE id = 1`);
 });
 
 module.exports = db;

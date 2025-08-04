@@ -18,11 +18,16 @@ const User = {
 
   // Create new user
   create: (userData, callback) => {
-    const { name, email, password, role } = userData;
+    const {
+      name,
+      email,
+      password,
+      role
+    } = userData;
     db.run(
       'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
       [name, email, password, role],
-      function(err) {
+      function (err) {
         callback(err, this ? this.lastID : null);
       }
     );
@@ -30,7 +35,11 @@ const User = {
 
   // Update user
   update: (id, userData, callback) => {
-    const { name, email, role } = userData;
+    const {
+      name,
+      email,
+      role
+    } = userData;
     db.run(
       'UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?',
       [name, email, role, id],
@@ -70,25 +79,26 @@ const User = {
   // Assign student to teacher (create a default class if needed)
   assignStudentToTeacher: (studentId, teacherId, callback) => {
     // First, get or create a default class for the teacher
-    db.get('SELECT id FROM classes WHERE teacher_id = ? AND name = ?', 
+    db.get('SELECT id FROM classes WHERE teacher_id = ? AND name = ?',
       [teacherId, 'Default Class'], (err, classRow) => {
-      if (err) return callback(err);
+        if (err) return callback(err);
 
-      if (classRow) {
-        // Class exists, add student to it
-        db.run('INSERT OR IGNORE INTO student_classes (student_id, class_id) VALUES (?, ?)',
-          [studentId, classRow.id], callback);
-      } else {
-        // Create default class first, then add student
-        db.run('INSERT INTO classes (name, description, teacher_id) VALUES (?, ?, ?)',
-          ['Default Class', 'Default class for teacher assignments', teacherId], function(err) {
-          if (err) return callback(err);
-          
-          db.run('INSERT INTO student_classes (student_id, class_id) VALUES (?, ?)',
-            [studentId, this.lastID], callback);
-        });
-      }
-    });
+        if (classRow) {
+          // Class exists, add student to it
+          db.run('INSERT OR IGNORE INTO student_classes (student_id, class_id) VALUES (?, ?)',
+            [studentId, classRow.id], callback);
+        } else {
+          // Create default class first, then add student
+          db.run('INSERT INTO classes (name, description, teacher_id) VALUES (?, ?, ?)',
+            ['Default Class', 'Default class for teacher assignments', teacherId],
+            function (err) {
+              if (err) return callback(err);
+
+              db.run('INSERT INTO student_classes (student_id, class_id) VALUES (?, ?)',
+                [studentId, this.lastID], callback);
+            });
+        }
+      });
   },
 
   // Unassign student from teacher

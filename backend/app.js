@@ -6,19 +6,19 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? 
-    [
-      'https://grade-book-frontend.onrender.com',  // Your frontend URL
-      'https://gradebook-app.onrender.com',
-      'https://gradebook-app-frontend.onrender.com',
-      // Allow any onrender.com subdomain for testing
-      /https:\/\/.*\.onrender\.com$/
-    ] : 
-    ['http://localhost:8080', 'http://127.0.0.1:8080'],
+  origin: process.env.NODE_ENV === 'production' ? [
+    'https://grade-book-frontend.onrender.com', // Your frontend URL
+    'https://gradebook-app.onrender.com',
+    'https://gradebook-app-frontend.onrender.com',
+    // Allow any onrender.com subdomain for testing
+    /https:\/\/.*\.onrender\.com$/
+  ] : ['http://localhost:8080', 'http://127.0.0.1:8080'],
   credentials: true
 }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({
+  extended: true
+}));
 
 // Initialize database
 require('./models/db');
@@ -31,18 +31,25 @@ app.use('/api/evaluations', require('./routes/evaluations.routes'));
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Grade Book API is running' });
+  res.json({
+    status: 'OK',
+    message: 'Grade Book API is running'
+  });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+  res.status(500).json({
+    error: 'Something went wrong!'
+  });
 });
 
 // 404 handler
 app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({
+    error: 'Route not found'
+  });
 });
 
 const PORT = process.env.PORT || 3000;
