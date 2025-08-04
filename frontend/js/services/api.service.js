@@ -2,21 +2,23 @@ angular.module('gradeBookApp')
 .service('ApiService', function($http, $q, AuthService) {
     var service = this;
     
-    // Force production API URL since you have separate frontend/backend services
+    // FORCE PRODUCTION API - Override for deployment issue
     var currentHost = window.location.hostname;
-    var isLocalhost = currentHost === 'localhost' || currentHost === '127.0.0.1';
+    var API_BASE;
     
-    var API_BASE = isLocalhost ? 
-        'http://localhost:3000/api' : 
-        'https://gradebook-app.onrender.com/api';  // Your backend service URL
+    if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        API_BASE = 'http://localhost:3000/api';
+    } else {
+        // Force production API for ANY non-localhost domain
+        API_BASE = 'https://gradebook-app.onrender.com/api';
+    }
     
     // Debug logging
-    console.log('=== API Service Debug ===');
+    console.log('=== API Service Debug (FORCED) ===');
     console.log('Current hostname:', currentHost);
-    console.log('Is localhost:', isLocalhost);
-    console.log('API Base URL:', API_BASE);
+    console.log('FORCED API Base URL:', API_BASE);
     console.log('Full location:', window.location.href);
-    console.log('========================');
+    console.log('==================================');
     
     // Expose API base URL
     service.getApiBase = function() {
