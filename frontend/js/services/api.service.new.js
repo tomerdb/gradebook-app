@@ -315,4 +315,226 @@ angular.module('gradeBookApp')
             window.open(url, '_blank');
         }
     };
+
+    // Teacher-specific methods (for backward compatibility)
+    service.getEvaluationsByTeacher = function(teacherId) {
+        var url = API_BASE + '/evaluations/teacher';
+        if (teacherId) {
+            url += '/' + teacherId;
+        }
+        return handleRequest(
+            $http.get(url, {
+                headers: getAuthHeaders()
+            })
+        );
+    };
+
+    service.getStudentsByTeacher = function(teacherId) {
+        var url = API_BASE + '/users/students/teacher';
+        if (teacherId) {
+            url += '/' + teacherId;
+        }
+        return handleRequest(
+            $http.get(url, {
+                headers: getAuthHeaders()
+            })
+        );
+    };
+
+    service.getCoursesByTeacher = function(teacherId) {
+        var url = API_BASE + '/courses/teacher';
+        if (teacherId) {
+            url += '/' + teacherId;
+        }
+        return handleRequest(
+            $http.get(url, {
+                headers: getAuthHeaders()
+            })
+        );
+    };
+
+    service.getCourseStudents = function(courseId) {
+        return handleRequest(
+            $http.get(API_BASE + '/courses/' + courseId + '/students', {
+                headers: getAuthHeaders()
+            })
+        );
+    };
+
+    service.getCourseEnrollments = function(courseId) {
+        return service.courses.getEnrollments(courseId);
+    };
+
+    service.getCourseGradingRules = function(courseId) {
+        return handleRequest(
+            $http.get(API_BASE + '/courses/' + courseId + '/grading-rules', {
+                headers: getAuthHeaders()
+            })
+        );
+    };
+
+    service.updateCourseGradingRules = function(courseId, rules) {
+        return service.courses.setGradingRules(courseId, rules);
+    };
+
+    // Admin-specific methods (for backward compatibility)
+    service.getUsers = function() {
+        return service.users.getAll();
+    };
+
+    service.createUser = function(userData) {
+        return service.users.create(userData);
+    };
+
+    service.updateUser = function(id, userData) {
+        return service.users.update(id, userData);
+    };
+
+    service.deleteUser = function(id) {
+        return service.users.delete(id);
+    };
+
+    service.getStudents = function() {
+        return service.users.getStudents();
+    };
+
+    service.getTeachers = function() {
+        return service.users.getTeachers();
+    };
+
+    service.getCourses = function() {
+        return service.courses.getAll();
+    };
+
+    service.createCourse = function(courseData) {
+        return service.courses.create(courseData);
+    };
+
+    service.deleteCourse = function(id) {
+        return service.courses.delete(id);
+    };
+
+    service.enrollStudent = function(studentId, courseId) {
+        return service.courses.enroll(courseId, studentId);
+    };
+
+    service.unenrollStudent = function(studentId, courseId) {
+        return service.courses.unenroll(courseId, studentId);
+    };
+
+    service.getEvaluations = function(filters) {
+        return service.evaluations.getAll(filters);
+    };
+
+    service.createEvaluation = function(evaluationData) {
+        return service.evaluations.create(evaluationData);
+    };
+
+    service.updateEvaluation = function(id, evaluationData) {
+        return service.evaluations.update(id, evaluationData);
+    };
+
+    service.deleteEvaluation = function(id) {
+        return service.evaluations.delete(id);
+    };
+
+    // Student-specific methods (for backward compatibility)
+    service.getCourseGrades = function() {
+        return handleRequest(
+            $http.get(API_BASE + '/evaluations/student/grades', {
+                headers: getAuthHeaders()
+            })
+        );
+    };
+
+    service.getEvaluationsByStudent = function() {
+        return handleRequest(
+            $http.get(API_BASE + '/evaluations/student', {
+                headers: getAuthHeaders()
+            })
+        );
+    };
+
+    // Report methods (for backward compatibility)
+    service.downloadPDFReport = function(filters) {
+        var url = API_BASE + '/evaluations/export-pdf';
+        var token = AuthService.getToken();
+        
+        if (filters) {
+            var params = new URLSearchParams();
+            Object.keys(filters).forEach(function(key) {
+                if (filters[key] !== null && filters[key] !== undefined && filters[key] !== '') {
+                    params.append(key, filters[key]);
+                }
+            });
+            if (token) {
+                params.append('token', token);
+            }
+            if (params.toString()) {
+                url += '?' + params.toString();
+            }
+        } else if (token) {
+            url += '?token=' + token;
+        }
+        
+        return url;
+    };
+
+    service.downloadCSVReport = function(filters) {
+        var url = API_BASE + '/evaluations/export-csv';
+        var token = AuthService.getToken();
+        
+        if (filters) {
+            var params = new URLSearchParams();
+            Object.keys(filters).forEach(function(key) {
+                if (filters[key] !== null && filters[key] !== undefined && filters[key] !== '') {
+                    params.append(key, filters[key]);
+                }
+            });
+            if (token) {
+                params.append('token', token);
+            }
+            if (params.toString()) {
+                url += '?' + params.toString();
+            }
+        } else if (token) {
+            url += '?token=' + token;
+        }
+        
+        return url;
+    };
+
+    service.getEvaluationStats = function() {
+        return handleRequest(
+            $http.get(API_BASE + '/evaluations/stats', {
+                headers: getAuthHeaders()
+            })
+        );
+    };
+
+    service.getTeacherAssignments = function() {
+        return handleRequest(
+            $http.get(API_BASE + '/users/teacher-assignments', {
+                headers: getAuthHeaders()
+            })
+        );
+    };
+
+    service.assignStudentToTeacher = function(studentId, teacherId) {
+        return handleRequest(
+            $http.post(API_BASE + '/users/assign-student', 
+                { studentId: studentId, teacherId: teacherId }, {
+                headers: getAuthHeaders()
+            })
+        );
+    };
+
+    service.unassignStudentFromTeacher = function(studentId, teacherId) {
+        return handleRequest(
+            $http.post(API_BASE + '/users/unassign-student', 
+                { studentId: studentId, teacherId: teacherId }, {
+                headers: getAuthHeaders()
+            })
+        );
+    };
 });

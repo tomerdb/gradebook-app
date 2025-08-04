@@ -1,14 +1,14 @@
 angular.module('gradeBookApp')
 
     // Admin Dashboard Controller
-    .controller('AdminDashboardController', function ($scope, ApiService) {
+    .controller('AdminDashboardController', function ($scope, ApiServiceNew) {
         $scope.stats = {};
         $scope.recentEvaluations = [];
         $scope.loading = true;
 
         function loadDashboard() {
             // Load statistics
-            ApiService.getEvaluationStats()
+            ApiServiceNew.getEvaluationStats()
                 .then(function (stats) {
                     $scope.stats = stats;
                 })
@@ -17,7 +17,7 @@ angular.module('gradeBookApp')
                 });
 
             // Load recent evaluations
-            ApiService.getEvaluations()
+            ApiServiceNew.getEvaluations()
                 .then(function (evaluations) {
                     $scope.recentEvaluations = evaluations.slice(0, 10); // Show last 10
                     $scope.loading = false;
@@ -32,7 +32,7 @@ angular.module('gradeBookApp')
     })
 
     // Admin Users Controller
-    .controller('AdminUsersController', function ($scope, ApiService) {
+    .controller('AdminUsersController', function ($scope, ApiServiceNew) {
         $scope.users = [];
         $scope.newUser = {
             name: '',
@@ -55,7 +55,7 @@ angular.module('gradeBookApp')
         };
 
         function loadUsers() {
-            ApiService.getUsers()
+            ApiServiceNew.getUsers()
                 .then(function (users) {
                     $scope.users = users;
                     $scope.loading = false;
@@ -72,7 +72,7 @@ angular.module('gradeBookApp')
                 return;
             }
 
-            ApiService.createUser($scope.newUser)
+            ApiServiceNew.createUser($scope.newUser)
                 .then(function (response) {
                     loadUsers();
                     $scope.newUser = {
@@ -94,7 +94,7 @@ angular.module('gradeBookApp')
         };
 
         $scope.updateUser = function () {
-            ApiService.updateUser($scope.editingUser.id, $scope.editingUser)
+            ApiServiceNew.updateUser($scope.editingUser.id, $scope.editingUser)
                 .then(function (response) {
                     loadUsers();
                     $scope.editingUser = null;
@@ -107,7 +107,7 @@ angular.module('gradeBookApp')
 
         $scope.deleteUser = function (user) {
             if (confirm('Are you sure you want to delete ' + user.name + '?')) {
-                ApiService.deleteUser(user.id)
+                ApiServiceNew.deleteUser(user.id)
                     .then(function (response) {
                         loadUsers();
                         alert('User deleted successfully');
@@ -153,7 +153,7 @@ angular.module('gradeBookApp')
 
         $scope.loadCourseData = function () {
             // Load courses
-            ApiService.getCourses()
+            ApiServiceNew.getCourses()
                 .then(function (courses) {
                     $scope.courses = courses;
                     $scope.loadAllEnrollments();
@@ -163,7 +163,7 @@ angular.module('gradeBookApp')
                 });
 
             // Load teachers
-            ApiService.getTeachers()
+            ApiServiceNew.getTeachers()
                 .then(function (teachers) {
                     $scope.teachers = teachers;
                 })
@@ -172,7 +172,7 @@ angular.module('gradeBookApp')
                 });
 
             // Load students
-            ApiService.getStudents()
+            ApiServiceNew.getStudents()
                 .then(function (students) {
                     $scope.students = students;
                 })
@@ -184,7 +184,7 @@ angular.module('gradeBookApp')
         $scope.loadAllEnrollments = function () {
             $scope.courseEnrollments = {};
             $scope.courses.forEach(function (course) {
-                ApiService.getCourseEnrollments(course.id)
+                ApiServiceNew.getCourseEnrollments(course.id)
                     .then(function (enrollments) {
                         $scope.courseEnrollments[course.id] = enrollments;
                     })
@@ -200,7 +200,7 @@ angular.module('gradeBookApp')
                 return;
             }
 
-            ApiService.createCourse($scope.newCourse)
+            ApiServiceNew.createCourse($scope.newCourse)
                 .then(function (response) {
                     $scope.loadCourseData();
                     $scope.newCourse = {
@@ -217,7 +217,7 @@ angular.module('gradeBookApp')
 
         $scope.deleteCourse = function (courseId) {
             if (confirm('Are you sure you want to delete this course? This will also delete all enrollments and evaluations.')) {
-                ApiService.deleteCourse(courseId)
+                ApiServiceNew.deleteCourse(courseId)
                     .then(function () {
                         $scope.loadCourseData();
                         alert('Course deleted successfully');
@@ -229,7 +229,7 @@ angular.module('gradeBookApp')
         };
 
         $scope.enrollStudent = function (studentId, courseId) {
-            ApiService.enrollStudent(studentId, courseId)
+            ApiServiceNew.enrollStudent(studentId, courseId)
                 .then(function () {
                     $scope.loadAllEnrollments();
                     alert('Student enrolled successfully');
@@ -241,7 +241,7 @@ angular.module('gradeBookApp')
 
         $scope.unenrollStudent = function (studentId, courseId) {
             if (confirm('Are you sure you want to unenroll this student?')) {
-                ApiService.unenrollStudent(studentId, courseId)
+                ApiServiceNew.unenrollStudent(studentId, courseId)
                     .then(function () {
                         $scope.loadAllEnrollments();
                         alert('Student unenrolled successfully');
@@ -265,7 +265,7 @@ angular.module('gradeBookApp')
 
         $scope.loadAssignmentData = function () {
             // Load teachers
-            ApiService.getTeachers()
+            ApiServiceNew.getTeachers()
                 .then(function (teachers) {
                     $scope.teachers = teachers;
                 })
@@ -274,7 +274,7 @@ angular.module('gradeBookApp')
                 });
 
             // Load students
-            ApiService.getStudents()
+            ApiServiceNew.getStudents()
                 .then(function (students) {
                     $scope.students = students;
                 })
@@ -283,7 +283,7 @@ angular.module('gradeBookApp')
                 });
 
             // Load current assignments
-            ApiService.getTeacherAssignments()
+            ApiServiceNew.getTeacherAssignments()
                 .then(function (assignments) {
                     console.log('Assignments loaded:', assignments);
                     $scope.assignments = assignments;
@@ -321,7 +321,7 @@ angular.module('gradeBookApp')
         };
 
         $scope.assignStudent = function (studentId, teacherId) {
-            ApiService.assignStudentToTeacher(studentId, teacherId)
+            ApiServiceNew.assignStudentToTeacher(studentId, teacherId)
                 .then(function () {
                     $scope.loadAssignmentData();
                     alert('Student assigned successfully');
@@ -333,7 +333,7 @@ angular.module('gradeBookApp')
 
         $scope.unassignStudent = function (studentId, teacherId) {
             if (confirm('Are you sure you want to unassign this student?')) {
-                ApiService.unassignStudentFromTeacher(studentId, teacherId)
+                ApiServiceNew.unassignStudentFromTeacher(studentId, teacherId)
                     .then(function () {
                         $scope.loadAssignmentData();
                         alert('Student unassigned successfully');
@@ -367,7 +367,7 @@ angular.module('gradeBookApp')
     })
 
     // Admin Reports Controller
-    .controller('AdminReportsController', function ($scope, ApiService, AuthService) {
+    .controller('AdminReportsController', function ($scope, ApiServiceNew, AuthService) {
         $scope.evaluations = [];
         $scope.filteredEvaluations = [];
         $scope.loading = true;
@@ -379,7 +379,7 @@ angular.module('gradeBookApp')
         };
 
         function loadEvaluations() {
-            ApiService.getEvaluations()
+            ApiServiceNew.getEvaluations()
                 .then(function (evaluations) {
                     $scope.evaluations = evaluations;
                     $scope.filteredEvaluations = evaluations;
@@ -401,14 +401,14 @@ angular.module('gradeBookApp')
         };
 
         $scope.downloadPDFReport = function () {
-            var url = ApiService.downloadPDFReport({
+            var url = ApiServiceNew.downloadPDFReport({
                 type: 'all'
             });
             window.open(url, '_blank');
         };
 
         $scope.downloadCSVReport = function () {
-            var url = ApiService.downloadCSVReport({
+            var url = ApiServiceNew.downloadCSVReport({
                 type: 'all'
             });
             window.open(url, '_blank');
@@ -477,7 +477,7 @@ angular.module('gradeBookApp')
             // Create a form and submit it to download PDF
             var form = document.createElement('form');
             form.method = 'POST';
-            form.action = ApiService.getApiBase() + '/evaluations/reports/filtered-pdf';
+            form.action = ApiServiceNew.getApiBase() + '/evaluations/reports/filtered-pdf';
             form.target = '_blank';
 
             // Add auth token
@@ -527,7 +527,7 @@ angular.module('gradeBookApp')
         };
 
         $scope.downloadStudentGradeSheet = function (studentId) {
-            var url = ApiService.downloadPDFReport({
+            var url = ApiServiceNew.downloadPDFReport({
                 type: 'student',
                 studentId: studentId
             });

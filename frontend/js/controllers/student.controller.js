@@ -1,7 +1,7 @@
 angular.module('gradeBookApp')
 
 // Student Controllers
-.controller('StudentDashboardController', function($scope, ApiService, AuthService) {
+.controller('StudentDashboardController', function($scope, ApiServiceNew, AuthService) {
     $scope.courseGrades = [];
     $scope.recentEvaluations = [];
     $scope.loading = true;
@@ -14,7 +14,7 @@ angular.module('gradeBookApp')
 
     function loadDashboard() {
         // Load course grades first
-        ApiService.getCourseGrades()
+        ApiServiceNew.getCourseGrades()
             .then(function(courses) {
                 $scope.courseGrades = courses;
                 
@@ -41,7 +41,7 @@ angular.module('gradeBookApp')
                 }
                 
                 // Load recent evaluations
-                return ApiService.getEvaluationsByStudent();
+                return ApiServiceNew.getEvaluationsByStudent();
             })
             .then(function(evaluations) {
                 $scope.recentEvaluations = evaluations.slice(0, 5); // Show last 5
@@ -70,7 +70,7 @@ angular.module('gradeBookApp')
 
     $scope.downloadPDFReport = function() {
         var user = AuthService.getCurrentUser();
-        var url = ApiService.downloadPDFReport({ type: 'student', studentId: user.id });
+        var url = ApiServiceNew.downloadPDFReport({ type: 'student', studentId: user.id });
         window.open(url, '_blank');
     };
 
@@ -84,7 +84,7 @@ angular.module('gradeBookApp')
     loadDashboard();
 })
 
-.controller('StudentReportsController', function($scope, ApiService, AuthService) {
+.controller('StudentReportsController', function($scope, ApiServiceNew, AuthService) {
     $scope.courseGrades = [];
     $scope.evaluations = [];
     $scope.filteredEvaluations = [];
@@ -99,12 +99,12 @@ angular.module('gradeBookApp')
 
     function loadReports() {
         // Load course grades first
-        ApiService.getCourseGrades()
+        ApiServiceNew.getCourseGrades()
             .then(function(courses) {
                 $scope.courseGrades = courses;
                 
                 // Load all evaluations
-                return ApiService.getEvaluationsByStudent();
+                return ApiServiceNew.getEvaluationsByStudent();
             })
             .then(function(evaluations) {
                 $scope.evaluations = evaluations;
@@ -128,7 +128,7 @@ angular.module('gradeBookApp')
 
     $scope.downloadPDFReport = function() {
         var user = AuthService.getCurrentUser();
-        var url = ApiService.downloadPDFReport({ type: 'student', studentId: user.id });
+        var url = ApiServiceNew.downloadPDFReport({ type: 'student', studentId: user.id });
         window.open(url, '_blank');
     };
 
