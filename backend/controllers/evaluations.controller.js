@@ -33,28 +33,52 @@ const EvaluationsController = {
       return res.status(400).json({ error: 'Invalid evaluation type' });
     }
 
-    const evaluationData = {
-      student_id,
-      teacher_id,
-      course_id,
-      subject,
-      evaluation_type,
-      score: numericScore,
-      feedback: feedback || ''
-    };
-
-    console.log('Creating evaluation with data:', evaluationData);
-
-    Evaluation.create(evaluationData, (err, evaluationId) => {
+    // Fetch names to store them permanently
+    const db = require('../models/db');
+    
+    db.get(`
+      SELECT 
+        s.name as student_name,
+        t.name as teacher_name,
+        c.name as course_name
+      FROM users s, users t, courses c
+      WHERE s.id = ? AND t.id = ? AND c.id = ?
+    `, [student_id, teacher_id, course_id], (err, names) => {
       if (err) {
-        console.log('Database error creating evaluation:', err);
-        return res.status(500).json({ error: 'Failed to create evaluation' });
+        console.log('Error fetching names:', err);
+        return res.status(500).json({ error: 'Failed to fetch user/course names' });
       }
 
-      console.log('Evaluation created successfully with ID:', evaluationId);
-      res.status(201).json({
-        message: 'Evaluation created successfully',
-        evaluationId
+      if (!names) {
+        return res.status(400).json({ error: 'Invalid student, teacher, or course ID' });
+      }
+
+      const evaluationData = {
+        student_id,
+        teacher_id,
+        course_id,
+        student_name: names.student_name,
+        teacher_name: names.teacher_name,
+        course_name: names.course_name,
+        subject,
+        evaluation_type,
+        score: numericScore,
+        feedback: feedback || ''
+      };
+
+      console.log('Creating evaluation with data:', evaluationData);
+
+      Evaluation.create(evaluationData, (err, evaluationId) => {
+        if (err) {
+          console.log('Database error creating evaluation:', err);
+          return res.status(500).json({ error: 'Failed to create evaluation' });
+        }
+
+        console.log('Evaluation created successfully with ID:', evaluationId);
+        res.status(201).json({
+          message: 'Evaluation created successfully',
+          evaluationId
+        });
       });
     });
   },
@@ -428,18 +452,18 @@ const EvaluationsController = {
         sql = `
           SELECT 
             e.id,
-            u_student.name as student_name,
-            u_teacher.name as teacher_name,
-            c.name as course_name,
+            COALESCE(u_student.name, 'Unknown Student') as student_name,
+            COALESCE(u_teacher.name, 'Unknown Teacher') as teacher_name,
+            COALESCE(c.name, 'Unknown Course') as course_name,
             e.subject,
             e.evaluation_type,
             e.score,
             e.feedback,
             e.date_created
           FROM evaluations e
-          JOIN users u_student ON e.student_id = u_student.id
-          JOIN users u_teacher ON e.teacher_id = u_teacher.id
-          JOIN courses c ON e.course_id = c.id
+          LEFT JOIN users u_student ON e.student_id = u_student.id
+          LEFT JOIN users u_teacher ON e.teacher_id = u_teacher.id
+          LEFT JOIN courses c ON e.course_id = c.id
           ORDER BY e.date_created DESC
         `;
       }

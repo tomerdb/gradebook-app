@@ -3,10 +3,10 @@ const db = require('./db');
 const Evaluation = {
   // Create new evaluation
   create: (evaluationData, callback) => {
-    const { student_id, teacher_id, course_id, subject, evaluation_type, score, feedback } = evaluationData;
+    const { student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback } = evaluationData;
     db.run(
-      'INSERT INTO evaluations (student_id, teacher_id, course_id, subject, evaluation_type, score, feedback) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [student_id, teacher_id, course_id, subject, evaluation_type, score, feedback],
+      'INSERT INTO evaluations (student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback],
       function(err) {
         callback(err, this ? this.lastID : null);
       }
@@ -57,13 +57,13 @@ const Evaluation = {
   getAll: (callback) => {
     db.all(`
       SELECT e.*, 
-             s.name as student_name, 
-             t.name as teacher_name, 
-             c.name as course_name
+             COALESCE(e.student_name, s.name, 'Unknown Student') as student_name, 
+             COALESCE(e.teacher_name, t.name, 'Unknown Teacher') as teacher_name, 
+             COALESCE(e.course_name, c.name, 'Unknown Course') as course_name
       FROM evaluations e
-      JOIN users s ON e.student_id = s.id
-      JOIN users t ON e.teacher_id = t.id
-      JOIN courses c ON e.course_id = c.id
+      LEFT JOIN users s ON e.student_id = s.id
+      LEFT JOIN users t ON e.teacher_id = t.id
+      LEFT JOIN courses c ON e.course_id = c.id
       ORDER BY e.date_created DESC
     `, callback);
   },
@@ -102,11 +102,10 @@ const Evaluation = {
   getStats: (callback) => {
     db.get(`
       SELECT 
-        COUNT(*) as total_evaluations,
-        AVG(score) as average_score,
-        COUNT(DISTINCT student_id) as total_students,
-        COUNT(DISTINCT teacher_id) as total_teachers
-      FROM evaluations
+        (SELECT COUNT(*) FROM evaluations) as total_evaluations,
+        (SELECT AVG(score) FROM evaluations) as average_score,
+        (SELECT COUNT(*) FROM users WHERE role = 'student') as total_students,
+        (SELECT COUNT(*) FROM users WHERE role = 'teacher') as total_teachers
     `, callback);
   },
 

@@ -57,6 +57,9 @@ db.serialize(() => {
     student_id INTEGER NOT NULL,
     teacher_id INTEGER NOT NULL,
     course_id INTEGER NOT NULL,
+    student_name TEXT,
+    teacher_name TEXT,
+    course_name TEXT,
     subject TEXT NOT NULL,
     evaluation_type TEXT NOT NULL CHECK(evaluation_type IN ('exam', 'homework', 'participation', 'project', 'quiz')),
     score INTEGER NOT NULL CHECK(score >= 0 AND score <= 100),
@@ -129,14 +132,14 @@ db.serialize(() => {
           VALUES (4, 3)`);
 
   // Insert sample evaluations
-  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, subject, evaluation_type, score, feedback, date_created) 
-          VALUES (1, 4, 2, 1, 'Final exam', 'exam', 90, 'Excellent work!', '2025-08-03 13:45:00')`);
+  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
+          VALUES (1, 4, 2, 1, 'Jane Student', 'John Teacher', 'Mathematics', 'Final exam', 'exam', 90, 'Excellent work!', '2025-08-03 13:45:00')`);
 
-  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, subject, evaluation_type, score, feedback, date_created) 
-          VALUES (2, 4, 5, 3, 'exss', 'homework', 77, 'No feedback', '2025-08-03 14:46:57')`);
+  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
+          VALUES (2, 4, 5, 3, 'Jane Student', 'John Teacher', 'Mathematics', 'Mathematics Quiz', 'quiz', 95, 'Great performance!', '2025-08-03 14:46:57')`);
 
-  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, subject, evaluation_type, score, feedback, date_created) 
-          VALUES (3, 4, 2, 1, 'ss', 'participation', 70, '', '2025-08-03 13:44:42')`);
+  db.run(`INSERT OR IGNORE INTO evaluations (id, student_id, teacher_id, course_id, student_name, teacher_name, course_name, subject, evaluation_type, score, feedback, date_created) 
+          VALUES (3, 4, 2, 1, 'Jane Student', 'John Teacher', 'Mathematics', 'Class Participation', 'participation', 92, 'Active participation in discussions', '2025-08-03 13:44:42')`);
 });
 
 module.exports = db;
