@@ -66,23 +66,42 @@ const User = {
   getStudentsByTeacher: (teacherId, callback) => {
     console.log('🔍 User.getStudentsByTeacher called with teacherId:', teacherId);
     
-    // First, try a simple query to get students who have evaluations by this teacher
-    const simpleQuery = `
+    // Get all students connected to this teacher through evaluations OR course enrollments
+    const allStudentsQuery = `
       SELECT DISTINCT u.id, u.name, u.email,
-        'Has Evaluations' as course_names,
-        COUNT(e.id) as course_count
+        CASE 
+          WHEN c.course_names IS NOT NULL THEN c.course_names
+          WHEN e.has_evals > 0 THEN 'Has Evaluations'
+          ELSE 'No Course Info'
+        END as course_names,
+        COALESCE(c.course_count, e.eval_count, 0) as course_count
       FROM users u
-      INNER JOIN evaluations e ON u.id = e.student_id
-      WHERE e.teacher_id = $1 AND u.role = 'student'
-      GROUP BY u.id, u.name, u.email
+      LEFT JOIN (
+        SELECT ce.student_id, 
+               string_agg(DISTINCT courses.name, ', ') as course_names,
+               COUNT(DISTINCT courses.id) as course_count
+        FROM course_enrollments ce
+        JOIN courses ON ce.course_id = courses.id
+        WHERE courses.teacher_id = $1
+        GROUP BY ce.student_id
+      ) c ON u.id = c.student_id
+      LEFT JOIN (
+        SELECT e.student_id,
+               COUNT(e.id) as eval_count,
+               1 as has_evals
+        FROM evaluations e
+        WHERE e.teacher_id = $1
+        GROUP BY e.student_id
+      ) e ON u.id = e.student_id
+      WHERE u.role = 'student' 
+        AND (c.student_id IS NOT NULL OR e.student_id IS NOT NULL)
       ORDER BY u.name
     `;
     
-    console.log('📋 Executing simple evaluation query...');
-    console.log('📋 Query:', simpleQuery);
+    console.log('📋 Executing comprehensive student query...');
     console.log('📋 Teacher ID:', teacherId);
     
-    db.all(simpleQuery, [teacherId], (err, students) => {
+    db.all(allStudentsQuery, [teacherId], (err, students) => {
       if (err) {
         console.error('❌ Database error:', err);
         console.error('❌ Error details:', err.message);
