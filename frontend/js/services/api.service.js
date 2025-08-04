@@ -2,15 +2,20 @@ angular.module('gradeBookApp')
 .service('ApiService', function($http, $q, AuthService) {
     var service = this;
     
-    // Use the correct backend URL from your deployment
-    var API_BASE = window.location.hostname.includes('localhost') ? 
+    // Force production API URL since you have separate frontend/backend services
+    var currentHost = window.location.hostname;
+    var isLocalhost = currentHost === 'localhost' || currentHost === '127.0.0.1';
+    
+    var API_BASE = isLocalhost ? 
         'http://localhost:3000/api' : 
-        'https://gradebook-app.onrender.com/api';  // Your actual backend URL
+        'https://gradebook-app.onrender.com/api';  // Your backend service URL
     
     // Debug logging
     console.log('=== API Service Debug ===');
-    console.log('Current hostname:', window.location.hostname);
+    console.log('Current hostname:', currentHost);
+    console.log('Is localhost:', isLocalhost);
     console.log('API Base URL:', API_BASE);
+    console.log('Full location:', window.location.href);
     console.log('========================');
     
     // Expose API base URL
