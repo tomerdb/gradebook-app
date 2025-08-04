@@ -98,10 +98,25 @@ const Course = {
     `, [courseId], callback);
   },
 
+  // Get available students (not enrolled in a specific course)
+  getAvailableStudents: (courseId, callback) => {
+    db.all(`
+      SELECT s.id, s.name, s.email
+      FROM users s
+      WHERE s.role = 'student' 
+      AND s.id NOT IN (
+        SELECT ce.student_id 
+        FROM course_enrollments ce 
+        WHERE ce.course_id = ?
+      )
+      ORDER BY s.name
+    `, [courseId], callback);
+  },
+
   // Enroll student in course
   enrollStudent: (studentId, courseId, callback) => {
     db.run(
-      'INSERT OR IGNORE INTO course_enrollments (student_id, course_id) VALUES (?, ?)',
+      'INSERT INTO course_enrollments (student_id, course_id) VALUES (?, ?) ON CONFLICT (student_id, course_id) DO NOTHING',
       [studentId, courseId],
       callback
     );

@@ -17,6 +17,7 @@ router.post('/enroll', adminOnly, CoursesController.enrollStudent);
 router.post('/unenroll', adminOnly, CoursesController.unenrollStudent);
 router.get('/:courseId/enrollments', teacherOrAdmin, CoursesController.getEnrollments);
 router.get('/:courseId/students', teacherOrAdmin, CoursesController.getCourseStudents);
+router.get('/:courseId/available-students', adminOnly, CoursesController.getAvailableStudents);
 
 // Teacher and Admin routes
 router.get('/teacher/:teacherId?', teacherOrAdmin, CoursesController.getByTeacher);

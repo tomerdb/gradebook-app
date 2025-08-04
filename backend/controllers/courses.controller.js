@@ -167,6 +167,22 @@ const CoursesController = {
     });
   },
 
+  // Get available students (not enrolled in a specific course)
+  getAvailableStudents: (req, res) => {
+    const {
+      courseId
+    } = req.params;
+
+    Course.getAvailableStudents(courseId, (err, students) => {
+      if (err) {
+        return res.status(500).json({
+          error: 'Database error'
+        });
+      }
+      res.json(students);
+    });
+  },
+
   // Enroll student in course (Admin only)
   enrollStudent: (req, res) => {
     const {
