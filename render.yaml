@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: grade-book-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+    healthCheckPath: /api/health
+
+  - type: static
+    name: grade-book-frontend
+    plan: free
+    buildCommand: echo "No build needed for static frontend"
+    staticPublishPath: ./frontend
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

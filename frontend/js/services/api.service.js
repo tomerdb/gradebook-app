@@ -1,7 +1,14 @@
 angular.module('gradeBookApp')
 .service('ApiService', function($http, $q, AuthService) {
     var service = this;
-    var API_BASE = 'http://localhost:3000/api';
+    
+    // Detect if we're in production or development
+    var isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+    var API_BASE = isProduction ? 
+        'https://grade-book-backend.onrender.com/api' : 
+        'http://localhost:3000/api';
+    
+    console.log('API Base URL:', API_BASE, '(Production:', isProduction, ')');
     
     // Expose API base URL
     service.getApiBase = function() {

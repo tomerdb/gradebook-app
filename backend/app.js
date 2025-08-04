@@ -5,7 +5,11 @@ const path = require('path');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' ? 
+    ['https://grade-book-frontend.onrender.com', 'https://your-frontend-url.onrender.com'] : 
+    ['http://localhost:8080', 'http://127.0.0.1:8080']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -35,8 +39,9 @@ app.use('*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 module.exports = app;
